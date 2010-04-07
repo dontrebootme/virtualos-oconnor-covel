@@ -3,6 +3,8 @@ mapFuncPtr2.cpp
 K Zemoudeh
 4/5/10
 
+ THIS HAS BEEN CHANGED
+ * 
 This program improves on mapFuncPtr.cpp by incorporating Exception
 Handling. The original program fails on an invalid opcode; this
 program doesn't.
