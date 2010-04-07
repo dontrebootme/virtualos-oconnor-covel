@@ -1,17 +1,12 @@
-/* 
- * File:   main.cpp
- * Author: tcovel
- *
- * Created on April 7, 2010, 2:16 PM
- */
 
-#include <stdlib.h>
+using namespace std;
 
-/*
- * 
- */
-int main(int argc, char** argv) {
+#include "Assembler.h"
+#include "VirtualMachine.h"
 
-    return (EXIT_SUCCESS);
-}
+        main(int argc, char *argv[])
+        {
+                Assembler as;
+                VirtualMachine vm;
 
+        } // main
