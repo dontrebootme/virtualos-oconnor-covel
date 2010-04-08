@@ -1,0 +1,33 @@
+PARTNO PLD01; 
+NAME CODECONV; 
+DATE October 30, 2008; 
+REV 01; 
+DESIGNER Chad Cordero; 
+COMPANY CSUSB; 
+DEVICE G16V8A; 
+ASSEMBLY BREADBOARD; 
+LOCATION JBH-356; 
+
+/* INPUTS */ 
+PIN 1 = W; 
+PIN 2 = X; 
+PIN 3 = Y; 
+PIN 4 = Z; 
+
+/* OUTPUTS */
+PIN 12 = a; 
+PIN 13 = b; 
+PIN 14 = c; 
+PIN 15 = d; 
+PIN 16 = e; 
+PIN 17 = f; 
+PIN 18 = g; 
+
+/* BOOLEAN FUNCTIONS */ 
+a = Y&!Z # W&!Z # !X&!Z # X&Y # !W&Y # !W&X&Z # W&!X&!Y;
+b = !W&!X # !X&!Z # !W&!Y&!Z # !W&Y&Z # W&!Y&Z;
+c = !W&X # W&!X # !Y&Z # !W&!Y&!Z # !W&Y&Z;
+d = W&!Y # W&!X&Z # X&!Y&Z # !X&!Y&!Z # !W&!X&Y # X&Y&!Z;
+e = W&X # Y&!Z # !X&!Z # W&Y;
+f = !Y&!Z # W&!X # !W&X&!Y # X&Y&!Z # W&Y;
+g = W&!X # Y&!Z # !X&Y # !W&X&!Y # W&Z;
