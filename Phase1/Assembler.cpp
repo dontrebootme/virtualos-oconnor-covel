@@ -38,7 +38,7 @@ void Assembler::assemble(string file)
 	assemblyFile.open(file, ios::in);
 	
 	//Check if file exists
-	if (!assemblyProg)
+	if (!assemblyFile)
 	{
 		cout << "Error opening file: " << file << endl;
 		exit(1);
@@ -47,10 +47,10 @@ void Assembler::assemble(string file)
 	//Remove file extension and add new extension
 	outputName.assign(file,0,file.length()-2);
 	outputName += ".o";
-	outputFile.open(outputName,ios::out);
+	objectFile.open(outputName,ios::out);
 	
 	getline(assemblyFile, line);
-        while(!assemblyProg.eof()){
+        while(!assemblyFile.eof()){
                 int rd=-1, rs=-1, constant=-129;
 
                 istringstream str(line.c_str());
@@ -68,17 +68,17 @@ void Assembler::assemble(string file)
                 case "andi":
                         if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 128 )
                         {
-                                instr = op[opcode] << 11;
-                                instr += rd << 9;
-                                instr += 1 << 8;
-                                instr += rs;
+                                instrNum = op[opcode] << 11;
+                                instrNum += rd << 9;
+                                instrNum += 1 << 8;
+                                instrNum += rs;
                         }
                         else if ( rd >= 0 && rd < 4 && rs < 0 && rs >= -128 )
                         {
-                                instr = op[opcode] << 11;
-                                instr += rd << 9;
-                                instr += 1 << 9;
-                                instr += rs;
+                                instrNum = op[opcode] << 11;
+                                instrNum += rd << 9;
+                                instrNum += 1 << 9;
+                                instrNum += rs;
                         }
                         break;
 
@@ -87,7 +87,7 @@ void Assembler::assemble(string file)
                 case "jumpe":
                 case "jumpl":
                 case "jump":
-                        instr = (op[opcode] << 11) + rd;
+                        instrNum = (op[opcode] << 11) + rd;
                         break;
 
                 case "compl":
@@ -99,34 +99,50 @@ void Assembler::assemble(string file)
                 case "putstat":
                 case "read":
                 case "write":
-                        instr = op[opcode] << 11;
-                        instr += rd << 9;
+                        instrNum = op[opcode] << 11;
+                        instrNum += rd << 9;
                         break;
 
                 case "load":
                 case "store":
-                        instr = op[opcode] << 11;
-                        instr += rd << 9;
-                        instr += rs;
+                        instrNum = op[opcode] << 11;
+                        instrNum += rd << 9;
+                        instrNum += rs;
                         break;
 
-                case "add";
+                case "add":
                 case "addc":
                 case "sub":
                 case "subc":
                 case "and":
                 case "xor":
                 case "compr":
-                        instr = op[opcode] << 11;
-                        instr += rd << 9;
-                        instr += rs << 6;
+                        instrNum = op[opcode] << 11;
+                        instrNum += rd << 9;
+                        instrNum += rs << 6;
                         break;
+
+		default:
+                        cout << "Failed to assemble the following instruction:   ";
+
+                        if(rd != -1 && rs != -1)
+                                cout << opcode << " " << rd << " " << rs << endl;
+                        else
+                                cout << opcode << endl;
+
+                        if(rd != -1 && rs == -1)
+                                cout << opcode << " " << rd << endl;
+
+                        cout << "Assembler is now exiting!\n";
+                        exit(1);
                 }
 
+                objectFile << instrNum << endl;
+                getline(assemblyFile, line);
 
-	cout << line << endl;
+	}
 	assemblyFile.close();
-	outputFile.close();
+	objectFile.close();
 }
 /*
 	try {
