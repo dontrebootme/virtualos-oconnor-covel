@@ -18,6 +18,6 @@ private:
 	int instrNum;
 	string op, line, outputName;
 	fstream assemblyFile;
-	ostream objectFile;
+	ofstream objectFile;
+};
 #endif	
-
