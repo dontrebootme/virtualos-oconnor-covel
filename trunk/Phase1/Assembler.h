@@ -1,14 +1,19 @@
-/* 
- * File:   Assembler.h
- * Author: tcovel
- *
- * Created on April 7, 2010, 2:23 PM
- */
-
 #ifndef _ASSEMBLER_H
 #define	_ASSEMBLER_H
+#include <iostream>
+#include <string>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
 
+using namespace std;
+class Assembler {
+	map <string, int> opcode;
 
-
-#endif	/* _ASSEMBLER_H */
+public:
+	Assembler();
+	int assemble();
+private:
+#endif	
 
