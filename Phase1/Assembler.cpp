@@ -1,22 +1,6 @@
-/******************************************************************
-mapFuncPtr2.cpp
-K Zemoudeh
-4/5/10
+#include "Assembler.h"
 
-This program improves on mapFuncPtr.cpp by incorporating Exception
-Handling. The original program fails on an invalid opcode; this
-program doesn't.
-*******************************************************************/
-#include "assembler.h"
-/*
-#include <iostream>
-#include <string>
-#include <map>
-#include <stdexcept>
-
-using namespace std;
-*/
-class NullPointerException: public runtime_error {
+/*class NullPointerException: public runtime_error {
 public:
 	NullPointerException(): runtime_error("Null Pointer!") { }
 };
@@ -28,15 +12,13 @@ class Assembler {
 	void sub(string s) { cout << "sub" << s << endl; }
 	void load(string s) { cout << "load" << s << endl; }
 	map<string, FP> instr;
-/*public:
 	Assembler();
 	int assemble();
-*/
 };
-
+*/
 Assembler::Assembler()
 {
-	opcode["load"] = &Assemble::load;	opcode["andi"] = 6;		opcode["jump"] = 16;
+	opcode["load"] = 0;	opcode["andi"] = 6;		opcode["jump"] = 16;
 	opcode["loadi"] = 0;    opcode["xor"] = 7;      	opcode["jumpl"] = 17;
 	opcode["store"] = 1;	opcode["xori"] = 7;     	opcode["jumpe"] = 18;
 	opcode["add"] = 2;	opcode["compl"] = 8;   		opcode["jumpg"] = 19;
@@ -51,10 +33,28 @@ Assembler::Assembler()
 
 }
 
-int Assembler::assemble()
+void Assembler::assemble(string file)
 {
-	string input;
-
+	assemblyFile.open(file, ios::in);
+	
+	//Check if file exists
+	if (!assemblyProg)
+	{
+		cout << "Error opening file: " << file << endl;
+		exit(1);
+	}
+	
+	//Remove file extension and add new extension
+	outputName.assign(file,0,file.length()-2);
+	outputName += ".o";
+	outputFile.open(outputName,ios::out);
+	
+	getline(assemblyFile, line);
+	cout << line << endl;
+	assemblyFile.close();
+	outputFile.close();
+}
+/*
 	try {
 		cin >> input;
 		if (not instr[input] )
@@ -80,7 +80,7 @@ K Zemoudeh
 
 This program illustrates how an assembly program line could be parsed.
 **********************************************************************/
-
+/*
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -114,4 +114,4 @@ main()
 		getline(assemblyProg, line);
 	}
 }
-
+*/

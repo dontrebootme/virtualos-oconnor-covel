@@ -13,7 +13,11 @@ class Assembler {
 
 public:
 	Assembler();
-	int assemble();
+	void assemble(string);
 private:
+	int instrNum;
+	string op, line, outputName;
+	fstream assemblyFile;
+	ostream objectFile;
 #endif	
 
