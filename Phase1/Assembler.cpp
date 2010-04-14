@@ -28,25 +28,26 @@ class Assembler {
 	void sub(string s) { cout << "sub" << s << endl; }
 	void load(string s) { cout << "load" << s << endl; }
 	map<string, FP> instr;
-public:
+/*public:
 	Assembler();
 	int assemble();
+*/
 };
 
 Assembler::Assembler()
 {
-	op["load"] = 0;		op["andi"] = 6;		op["jump"] = 16;
-	op["loadi"] = 0;        op["xor"] = 7;          op["jumpl"] = 17;
-	op["store"] = 1;	op["xori"] = 7;         op["jumpe"] = 18;
-	op["add"] = 2;		op["compl"] = 8;        op["jumpg"] = 19;
-	op["addi"] = 2;		op["shl"] = 9;          op["call"] = 20;
-	op["addc"] = 3;		op["shla"] = 10;        op["return"] = 21;
-	op["addci"] = 3;	op["shr"] = 11;		op["read"] = 22;
-	op["sub"] = 4;		op["shra"] = 12;	op["write"] = 23;
-	op["subi"] = 4;		op["compr"] = 13;  	op["halt"] = 24;
-	op["subc"] = 5;		op["compri"] = 13;	op["noop"] = 25;
-	op["subci"] = 5;	op["getstat"] = 14;
-        op["and"] = 6;		op["putstat"] = 15;
+	opcode["load"] = &Assemble::load;	opcode["andi"] = 6;		opcode["jump"] = 16;
+	opcode["loadi"] = 0;    opcode["xor"] = 7;      	opcode["jumpl"] = 17;
+	opcode["store"] = 1;	opcode["xori"] = 7;     	opcode["jumpe"] = 18;
+	opcode["add"] = 2;	opcode["compl"] = 8;   		opcode["jumpg"] = 19;
+	opcode["addi"] = 2;	opcode["shl"] = 9;     		opcode["call"] = 20;
+	opcode["addc"] = 3;	opcode["shla"] = 10;    	opcode["return"] = 21;
+	opcode["addci"] = 3;	opcode["shr"] = 11;		opcode["read"] = 22;
+	opcode["sub"] = 4;	opcode["shra"] = 12;		opcode["write"] = 23;
+	opcode["subi"] = 4;	opcode["compr"] = 13;  		opcode["halt"] = 24;
+	opcode["subc"] = 5;	opcode["compri"] = 13;		opcode["noop"] = 25;
+	opcode["subci"] = 5;	opcode["getstat"] = 14;
+        opcode["and"] = 6;	opcode["putstat"] = 15;
 
 }
 
