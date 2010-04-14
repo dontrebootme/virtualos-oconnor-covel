@@ -50,6 +50,80 @@ void Assembler::assemble(string file)
 	outputFile.open(outputName,ios::out);
 	
 	getline(assemblyFile, line);
+        while(!assemblyProg.eof()){
+                int rd=-1, rs=-1, constant=-129;
+
+                istringstream str(line.c_str());
+                str >> opcode >> rd >> rs;
+
+                switch(opcode)
+                {
+                case "loadi":
+                case "addci":
+                case "subi":
+                case "subci":
+                case "addi":
+                case "xori":
+                case "compri":
+                case "andi":
+                        if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 128 )
+                        {
+                                instr = op[opcode] << 11;
+                                instr += rd << 9;
+                                instr += 1 << 8;
+                                instr += rs;
+                        }
+                        else if ( rd >= 0 && rd < 4 && rs < 0 && rs >= -128 )
+                        {
+                                instr = op[opcode] << 11;
+                                instr += rd << 9;
+                                instr += 1 << 9;
+                                instr += rs;
+                        }
+                        break;
+
+                case "call":
+                case "jumpg":
+                case "jumpe":
+                case "jumpl":
+                case "jump":
+                        instr = (op[opcode] << 11) + rd;
+                        break;
+
+                case "compl":
+                case "shl":
+                case "shla":
+                case "shr":
+                case "shra":
+                case "getstat":
+                case "putstat":
+                case "read":
+                case "write":
+                        instr = op[opcode] << 11;
+                        instr += rd << 9;
+                        break;
+
+                case "load":
+                case "store":
+                        instr = op[opcode] << 11;
+                        instr += rd << 9;
+                        instr += rs;
+                        break;
+
+                case "add";
+                case "addc":
+                case "sub":
+                case "subc":
+                case "and":
+                case "xor":
+                case "compr":
+                        instr = op[opcode] << 11;
+                        instr += rd << 9;
+                        instr += rs << 6;
+                        break;
+                }
+
+
 	cout << line << endl;
 	assemblyFile.close();
 	outputFile.close();
