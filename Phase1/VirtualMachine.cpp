@@ -22,105 +22,107 @@ public:
 	NullPointerException(): runtime_error("Null Pointer!") { }
 };
 
-class Assembler {
-	typedef void (Assembler::*FP)(string);
-
-	void add(string s) { cout << "add" << s << endl; }
-	void sub(string s) { cout << "sub" << s << endl; }
-	void load(string s) { cout << "load" << s << endl; }
-	map<string, FP> instr;
-public:
-	Assembler();
-	int assemble();
-};
-
-Assembler::Assembler()
+void VirtualMachine::load()
 {
-	instr["add"] = &Assembler::add;
-	instr["sub"] = &Assembler::sub;
-	instr["load"] = &Assembler::load;
+}
+void VirtualMachine::loadi()
+{
+}
+void VirtualMachine::store()
+{
+}
+void VirtualMachine::add()
+{
+}
+void VirtualMachine::addi()
+{
+}
+void VirtualMachine::addc()
+{
+}
+void VirtualMachine::addci()
+{
+}
+void VirtualMachine::sub()
+{
+}
+void VirtualMachine::subi()
+{
+}
+void VirtualMachine::subc()
+{
+}
+void VirtualMachine::subci()
+{
+}
+void VirtualMachine::and()
+{
+}
+void VirtualMachine::andi()
+{
+}
+void VirtualMachine::xor()
+{
+}
+void VirtualMachine::xori()
+{
+}
+void VirtualMachine::compl()
+{
+}
+void VirtualMachine::shl()
+{
+}
+void VirtualMachine::shla()
+{
+}
+void VirtualMachine::shr()
+{
+}
+void VirtualMachine::shra()
+{
+}
+void VirtualMachine::compr()
+{
+}
+void VirtualMachine::compri()
+{
+}
+void VirtualMachine::getstat()
+{
+}
+void VirtualMachine::putstat()
+{
+}
+void VirtualMachine::jump()
+{
+}
+void VirtualMachine::jumpl()
+{
+}
+void VirtualMachine::jumpe()
+{
+}
+void VirtualMachine::jumpg()
+{
+}
+void VirtualMachine::call()
+{
+}
+void VirtualMachine::return()
+{
+}
+void VirtualMachine::read()
+{
+}
+void VirtualMachine::write()
+{
+}
+void VirtualMachine::halt()
+{
+}
+void VirtualMachine::noop()
+{
 }
 
-int Assembler::assemble()
-{
-	string input;
-
-	try {
-		cin >> input;
-		if (not instr[input] )
-			throw NullPointerException();
-		else (this->*instr[input])("something");
-
-	} catch (NullPointerException e) {
-		cerr << e.what() << endl;
-		return 1;
-	}
-}
-
-main()
-{
-	Assembler a;
-	a.assemble();
-}
-/*********************************************************************
-union.cpp
-K Zemoudeh
-4/5/10
-
-This program illustrates how to use "union" in parsing different VM
-formats.
-**********************************************************************/
-
-#include <iostream>
-//#include <iomanip>
-
-using namespace std;
-
-main()
-{
-	class format1 {
-	public:
-		unsigned UNUSED:6;
-		unsigned RS:2;
-		unsigned I:1;
-		unsigned RD:2;
-		unsigned OP:5;
-	};
-
-	class format2 {
-	public:
-		unsigned ADDR:8;
-		unsigned I:1;
-		unsigned RD:2;
-		unsigned OP:5;
-	};
-
-
-	class format3 {
-	public:
-		int CONST:8;
-		unsigned I:1;
-		unsigned RD:2;
-		unsigned OP:5;
-	};
-
-	union instruction {
-		int i;
-		format1 f1;
-		format2 f2;
-		format3 f3;
-	};
-
-	instruction ins;
-
-	ins.i = 0xa007;
-	//ins.i = 4288;
-	//ins.i = 1093;
-
-	//cout << hex;
-	cout << ins.i << endl;
-	cout << ins.f1.OP << " " << ins.f1.RD << " " << ins.f1.I << " " << ins.f1.RS << " " << ins.f1.UNUSED << endl;
-	cout << ins.f2.OP << " " << ins.f2.RD << " " << ins.f2.I << " " << ins.f2.ADDR << endl;
-	cout << ins.f3.OP << " " << ins.f3.RD << " " << ins.f3.I << " " << ins.f3.CONST << endl;
-}
 
