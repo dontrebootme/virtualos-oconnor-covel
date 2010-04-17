@@ -17,6 +17,7 @@ class Assembler {
 };
 */
 Assembler::Assembler()
+//opcode map
 {
 	opcode["load"] = 0;	opcode["andi"] = 6;		opcode["jump"] = 16;
 	opcode["loadi"] = 0;    opcode["xor"] = 7;      	opcode["jumpl"] = 17;
@@ -51,20 +52,25 @@ void Assembler::assemble(string file)
 	
 	getline(assemblyFile, line);
         while(!assemblyFile.eof()){
-                int rd=-1, rs=-1, constant=-129;
+                int rd=-1, rs=-1, constant=-129; //initialize to invalid values
 
                 istringstream str(line.c_str());
                 str >> op >> rd >> rs;
 		
+		//skip all comments and blank lines
 		if (line[0] == '!' || line.empty())
 		{
 			goto next;
 		}
 		
+		//handles opcodes which have no parameters		
 		else if(rd < 0 && rs < 0)
 		{
 			instrNum = opcode[op] << 11;
 		}
+
+
+		//evaluate parameters for immediate opcodes
 		else if ( op == "loadi" || op == "addci" || op == "subi" || op == "subci" || op == "addi" || 
 			op == "xori" || op == "compri" || op == "andi" )
 		{
@@ -83,22 +89,26 @@ void Assembler::assemble(string file)
                                 instrNum += rs;
                         }
 		}
+		//sets instruction for reference opcodes
 		else if ( op == "call" || op == "jumpg" || op == "jumpe" || op == "jumpl" || op == "jump" )
                 {        
 			instrNum = (opcode[op] << 11) + rd;
 		}
+
 		else if ( op == "compl" || op == "shl" || op == "shla" || op == "shr" || op == "shra" ||
 				 op == "getstat" || op == "putstat" || op == "read" || op == "write" )
                 {
 			instrNum = opcode[op] << 11;
                         instrNum += rd << 9;
 		}
+
 		else if ( op == "load" || op == "store" )
                 {
 			instrNum = opcode[op] << 11;
                         instrNum += rd << 9;
                         instrNum += rs;
 		}
+
 		else if ( op == "add" || op == "addc" || op == "sub" || op == "subc" || op == "and" ||
 				 op == "xor" || op == "compr" )
 		{
@@ -106,6 +116,8 @@ void Assembler::assemble(string file)
                         instrNum += rd << 9;
                         instrNum += rs << 6;
 		}
+
+                //evaluate failed opcodes
 		else
 		{
                         cout << "Failed to assemble the following instruction:   ";
@@ -119,11 +131,11 @@ void Assembler::assemble(string file)
                                 cout << op << " " << rd << endl;
 
                         cout << "Assembler is now exiting!\n";
-                        exit(1);
+                        exit(2);
                 }
-
-                objectFile << instrNum << endl;
-		next:
+		
+                objectFile << instrNum << endl; //writes the instruction number to our .o file
+		next: //reference point for skipping lines
                 getline(assemblyFile, line);
 
 	}
