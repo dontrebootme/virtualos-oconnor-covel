@@ -35,7 +35,7 @@ Assembler::Assembler()
 
 void Assembler::assemble(string file)
 {
-	assemblyFile.open(file, ios::in);
+	assemblyFile.open(file.c_str(), ios::in);
 	
 	//Check if file exists
 	if (!assemblyFile)
@@ -47,97 +47,83 @@ void Assembler::assemble(string file)
 	//Remove file extension and add new extension
 	outputName.assign(file,0,file.length()-2);
 	outputName += ".o";
-	objectFile.open(outputName,ios::out);
+	objectFile.open(outputName.c_str(),ios::out);
 	
 	getline(assemblyFile, line);
         while(!assemblyFile.eof()){
                 int rd=-1, rs=-1, constant=-129;
 
                 istringstream str(line.c_str());
-                str >> opcode >> rd >> rs;
-
-                switch(opcode)
-                {
-                case "loadi":
-                case "addci":
-                case "subi":
-                case "subci":
-                case "addi":
-                case "xori":
-                case "compri":
-                case "andi":
+                str >> op >> rd >> rs;
+		
+		if (line[0] == '!' || line.empty())
+		{
+			goto next;
+		}
+		
+		else if(rd < 0 && rs < 0)
+		{
+			instrNum = opcode[op] << 11;
+		}
+		else if ( op == "loadi" || op == "addci" || op == "subi" || op == "subci" || op == "addi" || 
+			op == "xori" || op == "compri" || op == "andi" )
+		{
                         if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 128 )
                         {
-                                instrNum = op[opcode] << 11;
+                                instrNum = opcode[op] << 11;
                                 instrNum += rd << 9;
                                 instrNum += 1 << 8;
                                 instrNum += rs;
                         }
                         else if ( rd >= 0 && rd < 4 && rs < 0 && rs >= -128 )
                         {
-                                instrNum = op[opcode] << 11;
+                                instrNum = opcode[op] << 11;
                                 instrNum += rd << 9;
                                 instrNum += 1 << 9;
                                 instrNum += rs;
                         }
-                        break;
-
-                case "call":
-                case "jumpg":
-                case "jumpe":
-                case "jumpl":
-                case "jump":
-                        instrNum = (op[opcode] << 11) + rd;
-                        break;
-
-                case "compl":
-                case "shl":
-                case "shla":
-                case "shr":
-                case "shra":
-                case "getstat":
-                case "putstat":
-                case "read":
-                case "write":
-                        instrNum = op[opcode] << 11;
+		}
+		else if ( op == "call" || op == "jumpg" || op == "jumpe" || op == "jumpl" || op == "jump" )
+                {        
+			instrNum = (opcode[op] << 11) + rd;
+		}
+		else if ( op == "compl" || op == "shl" || op == "shla" || op == "shr" || op == "shra" ||
+				 op == "getstat" || op == "putstat" || op == "read" || op == "write" )
+                {
+			instrNum = opcode[op] << 11;
                         instrNum += rd << 9;
-                        break;
-
-                case "load":
-                case "store":
-                        instrNum = op[opcode] << 11;
+		}
+		else if ( op == "load" || op == "store" )
+                {
+			instrNum = opcode[op] << 11;
                         instrNum += rd << 9;
                         instrNum += rs;
-                        break;
-
-                case "add":
-                case "addc":
-                case "sub":
-                case "subc":
-                case "and":
-                case "xor":
-                case "compr":
-                        instrNum = op[opcode] << 11;
+		}
+		else if ( op == "add" || op == "addc" || op == "sub" || op == "subc" || op == "and" ||
+				 op == "xor" || op == "compr" )
+		{
+                        instrNum = opcode[op] << 11;
                         instrNum += rd << 9;
                         instrNum += rs << 6;
-                        break;
-
-		default:
+		}
+		else
+		{
                         cout << "Failed to assemble the following instruction:   ";
 
                         if(rd != -1 && rs != -1)
-                                cout << opcode << " " << rd << " " << rs << endl;
+                                cout << op << " " << rd << " " << rs << endl;
                         else
-                                cout << opcode << endl;
+                                cout << op << endl;
 
                         if(rd != -1 && rs == -1)
-                                cout << opcode << " " << rd << endl;
+                                cout << op << " " << rd << endl;
 
                         cout << "Assembler is now exiting!\n";
                         exit(1);
                 }
 
                 objectFile << instrNum << endl;
+		next:
                 getline(assemblyFile, line);
 
 	}
