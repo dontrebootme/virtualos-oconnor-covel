@@ -1,4 +1,5 @@
 #include "VirtualMachine.h"
+
 void VirtualMachine::setcarry()
 {
 }
@@ -13,47 +14,38 @@ void VirtualMachine::VirtualMachine()
 }
 void VirtualMachine::load()
 {
-}
-void VirtualMachine::loadi()
-{
+	if (objCode.f1.I == 0) //If I = 0
+		{
+			r[objCode.f2.RD] = mem[objCode.f2.ADDR_CONST];
+			clock +=4;
+		}
+	else // If I = 1
+		{
+			r[objCode.f2.RD] = objCode.f2.ADDR_CONST;
+			clock +=1;
+		}
 }
 void VirtualMachine::store()
 {
+	mem[objCode.f2.ADDR_CONST] = r[objCode.f2.RD];
+	clock += 1;
 }
 void VirtualMachine::add()
-{
-}
-void VirtualMachine::addi()
 {
 }
 void VirtualMachine::addc()
 {
 }
-void VirtualMachine::addci()
-{
-}
 void VirtualMachine::sub()
-{
-}
-void VirtualMachine::subi()
 {
 }
 void VirtualMachine::subc()
 {
 }
-void VirtualMachine::subci()
-{
-}
 void VirtualMachine::and()
 {
 }
-void VirtualMachine::andi()
-{
-}
 void VirtualMachine::xor()
-{
-}
-void VirtualMachine::xori()
 {
 }
 void VirtualMachine::compl()
@@ -72,9 +64,6 @@ void VirtualMachine::shra()
 {
 }
 void VirtualMachine::compr()
-{
-}
-void VirtualMachine::compri()
 {
 }
 void VirtualMachine::getstat()

@@ -46,7 +46,7 @@ void Assembler::assemble(string file)
 	//Check if file exists
 	if (!assemblyFile)
 	{
-		cout << "Error opening file: " << file << endl;
+		cout << 	"Error opening file: " << file << endl;
 		exit(1);
 	}
 	
@@ -100,33 +100,33 @@ void Assembler::assemble(string file)
 		else if ( rd >= 0 && rd < 256 &&		// 0 =< ADDR < 256 -- ADDR is valid
 				 (op == "call" || op == "jumpg" || op == "jumpe" || op == "jumpl" || op == "jump") )
                 {        
-				instrNum = (opcode[op] << 11) + rd;
+			instrNum = (opcode[op] << 11) + rd;
 		}
 
 		else if ( rd >= 0 && rd < 4 &&  // RD is a valid register
 				(op == "compl" || op == "shl" || op == "shla" || op == "shr" || op == "shra" ||
 				 op == "getstat" || op == "putstat" || op == "read" || op == "write" ))
                 {
-		  	    instrNum = opcode[op] << 11;
-                instrNum += rd << 9;
+		  	instrNum = opcode[op] << 11;
+                	instrNum += rd << 9;
 		}
 
 		else if ( rd >= 0 && rd < 4 && //RD is a valid register
 				 rs >= 0 && rs < 256 && // 0 =< ADDR < 256 -- ADDR is valid
 				 (op == "load" || op == "store") )
                 {
-				instrNum = opcode[op] << 11;
-            	instrNum += rd << 9;
-            	instrNum += rs;
+			instrNum = opcode[op] << 11;
+            		instrNum += rd << 9;
+            		instrNum += rs;
 		}
 
 		else if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 4 && // RD and RS are valid registers
 				 (op == "add" || op == "addc" || op == "sub" || op == "subc" || op == "and" || 
 				 op == "xor" || op == "compr"))
-				{
-                instrNum = opcode[op] << 11;
-                instrNum += rd << 9;
-                instrNum += rs << 6;
+		{
+       	        	instrNum = opcode[op] << 11;
+        	        instrNum += rd << 9;
+                	instrNum += rs << 6;
 		}
 		
 
