@@ -56,11 +56,11 @@ void Assembler::assemble(string file)
 	objectFile.open(outputName.c_str(),ios::out);
 	
 	getline(assemblyFile, line);
-        while(!assemblyFile.eof()){
-                int rd=-1, rs=-1, constant=-129; //initialize to invalid values
+    while(!assemblyFile.eof()){
+        int rd=-1, rs=-1, constant=-129; //initialize to invalid values
 
-                istringstream str(line.c_str());
-                str >> op >> rd >> rs;
+        istringstream str(line.c_str());
+        str >> op >> rd >> rs;
 		
 		//skip all comments and blank lines
 		if (line[0] == '!' || line.empty())
@@ -79,50 +79,58 @@ void Assembler::assemble(string file)
 		else if ( op == "loadi" || op == "addci" || op == "subi" || op == "subci" || op == "addi" || 
 			op == "xori" || op == "compri" || op == "andi" )
 		{
+						// 0 <= RD < 4 and 0 =< CONST (RT) < 128
                         if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 128 )
                         {
                                 instrNum = opcode[op] << 11;
                                 instrNum += rd << 9;
-                                instrNum += 1 << 8;
+                                instrNum += 1 << 8;  //set I bit = 1
                                 instrNum += rs;
                         }
+						// 0 =< RD < 4 and -128 =< CONST (RT) < 0
                         else if ( rd >= 0 && rd < 4 && rs < 0 && rs >= -128 )
                         {
                                 instrNum = opcode[op] << 11;
                                 instrNum += rd << 9;
-                                instrNum += 1 << 9;
+                                instrNum += 1 << 9; // set I bit = 1
                                 instrNum += rs;
                         }
 		}
 		//sets instruction for reference opcodes
-		else if ( op == "call" || op == "jumpg" || op == "jumpe" || op == "jumpl" || op == "jump" )
+		else if ( rd >= 0 && rd < 256 &&		// 0 =< ADDR < 256 -- ADDR is valid
+				 (op == "call" || op == "jumpg" || op == "jumpe" || op == "jumpl" || op == "jump") )
                 {        
-			instrNum = (opcode[op] << 11) + rd;
+				instrNum = (opcode[op] << 11) + rd;
 		}
 
-		else if ( op == "compl" || op == "shl" || op == "shla" || op == "shr" || op == "shra" ||
-				 op == "getstat" || op == "putstat" || op == "read" || op == "write" )
+		else if ( rd >= 0 && rd < 4 &&  // RD is a valid register
+				(op == "compl" || op == "shl" || op == "shla" || op == "shr" || op == "shra" ||
+				 op == "getstat" || op == "putstat" || op == "read" || op == "write" ))
                 {
-			instrNum = opcode[op] << 11;
-                        instrNum += rd << 9;
+		  	    instrNum = opcode[op] << 11;
+                instrNum += rd << 9;
 		}
 
-		else if ( op == "load" || op == "store" )
+		else if ( rd >= 0 && rd < 4 && //RD is a valid register
+				 rs >= 0 && rs < 256 && // 0 =< ADDR < 256 -- ADDR is valid
+				 (op == "load" || op == "store") )
                 {
-			instrNum = opcode[op] << 11;
-                        instrNum += rd << 9;
-                        instrNum += rs;
+				instrNum = opcode[op] << 11;
+            	instrNum += rd << 9;
+            	instrNum += rs;
 		}
 
-		else if ( op == "add" || op == "addc" || op == "sub" || op == "subc" || op == "and" ||
-				 op == "xor" || op == "compr" )
-		{
-                        instrNum = opcode[op] << 11;
-                        instrNum += rd << 9;
-                        instrNum += rs << 6;
+		else if ( rd >= 0 && rd < 4 && rs >= 0 && rs < 4 && // RD and RS are valid registers
+				 (op == "add" || op == "addc" || op == "sub" || op == "subc" || op == "and" || 
+				 op == "xor" || op == "compr"))
+				{
+                instrNum = opcode[op] << 11;
+                instrNum += rd << 9;
+                instrNum += rs << 6;
 		}
+		
 
-                //evaluate failed opcodes
+                //evaluate failed instructions
 		else
 		{
                         cout << "Failed to assemble the following instruction:   ";
@@ -133,15 +141,15 @@ void Assembler::assemble(string file)
                                 cout << op << endl;
 
                         if(rd != -1 && rs == -1)
-                                cout << op << " " << rd << endl;
+							cout << op << " " << rd << endl;
 
                         cout << "Assembler is now exiting!\n";
                         exit(2);
                 }
 		
-                objectFile << instrNum << endl; //writes the instruction number to our .o file
+        objectFile << instrNum << endl; //writes the instruction number to our .o file
 		next: //reference point for skipping lines
-                getline(assemblyFile, line);
+        getline(assemblyFile, line);
 
 	}
 	assemblyFile.close();

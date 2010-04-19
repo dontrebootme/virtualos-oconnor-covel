@@ -1,27 +1,16 @@
-/******************************************************************
-mapFuncPtr2.cpp
-K Zemoudeh
-4/5/10
-
- THIS HAS BEEN CHANGED
- * 
-This program improves on mapFuncPtr.cpp by incorporating Exception
-Handling. The original program fails on an invalid opcode; this
-program doesn't.
-*******************************************************************/
-
-#include <iostream>
-#include <string>
-#include <map>
-#include <stdexcept>
-
-using namespace std;
-
-class NullPointerException: public runtime_error {
-public:
-	NullPointerException(): runtime_error("Null Pointer!") { }
-};
-
+#include "VirtualMachine.h"
+void VirtualMachine::setcarry()
+{
+}
+void VirtualMachine::getcarry()
+{
+}
+void VirtualMachine::run(string file)
+{
+}
+void VirtualMachine::VirtualMachine()
+{
+}
 void VirtualMachine::load()
 {
 }
@@ -124,5 +113,3 @@ void VirtualMachine::halt()
 void VirtualMachine::noop()
 {
 }
-
-
