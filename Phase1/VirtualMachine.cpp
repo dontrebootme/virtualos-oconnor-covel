@@ -4,14 +4,14 @@ void VirtualMachine::setCarry()
 {
 	
 	if(r[objCode.f1.RD] & 0x00010000) //check if 17th bit of RD is 1
-		sr = sr | 1; //set carry flag if 17th bit of RD is 1
+		sr = sr | 1; //set Carry flag if 17th bit of RD is 1
 	else 
-		sr = sr & 0x0000001E; //else carry is 0
+		sr = sr & 0x0000001E; //else Carry is 0
 }
 
-bool VirtualMachine::getCarry()	//return 1 if carry flag is set
+bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 {											
-	if (sr & 1) // check if carry flag is 1
+	if (sr & 1) // check if Carry flag is 1
 		return 1; // return 1
 	else 	   //otherwise
 		return 0; //return 0
@@ -117,7 +117,7 @@ void VirtualMachine::add()
 			sr = sr | 0x00000010;
 
 		r[objCode.f1.RD] += r[objCode.f1.RS];
-		setcarry();
+		setCarry();
      }
 	else {
 		
@@ -127,7 +127,7 @@ void VirtualMachine::add()
 			sr = sr | 0x00000010;
 		
 		r[objCode.f2.RD] += objCode.f2.AC;
-		setcarry();
+		setCarry();
 	}
 }	
 
@@ -141,12 +141,12 @@ void VirtualMachine::addc()
 		else if(objCode.f1.RD < 0 && objCode.f1.RS < 0 && ((objCode.f1.RD + objCode.f1.RS) >= 0))
 			sr = sr | 0x00000010;
 		
-		if ( getcarry() ) 
+		if ( getCarry() ) 
 			r[objCode.f1.RD] += r[objCode.f1.RS] + 1;
 		else//Carry is not set
 			r[objCode.f1.RD] += r[objCode.f1.RS];
 		
-		setcarry();
+		setCarry();
     }
 	else //I=1
 	{
@@ -155,12 +155,12 @@ void VirtualMachine::addc()
 		else if(objCode.f2.RD < 0 && objCode.f2.AC < 0 && ((objCode.f2.RD + objCode.f2.AC) >= 0))
 			sr = sr | 0x00000010;
 		
-		if ( getcarry() ) 
+		if ( getCarry() ) 
 			r[objCode.f2.RD] += objCode.f2.AC + 1;
-		else//carry is not set
+		else//Carry is not set
 			r[objCode.f2.RD] += objCode.f2.AC;
 		
-		setcarry();
+		setCarry();
 	}
 }
 	
@@ -175,7 +175,7 @@ void VirtualMachine::sub()
 			sr = sr | 0x00000010;
 
 		r[objCode.f1.RD] -= r[objCode.f1.RS];
-		setcarry();
+		setCarry();
    }
 	else//I=1
 	{	 
@@ -185,7 +185,7 @@ void VirtualMachine::sub()
 			sr = sr | 0x00000010;
 		
 		r[objCode.f2.RD] -= objCode.f2.AC;
-		setcarry();
+		setCarry();
 	}
 }	
 	
@@ -199,12 +199,12 @@ void VirtualMachine::subc()
 		else if(objCode.f1.RD < 0 && objCode.f1.RS < 0 && ((objCode.f1.RD + objCode.f1.RS) >= 0))
 			sr = sr | 0x00000010;
 		
-		if ( getcarry() ) 
+		if ( getCarry() ) 
 			r[objCode.f1.RD] -= r[objCode.f1.RS] - 1;
-		else//no carry
+		else//no Carry
 			r[objCode.f1.RD] -= r[objCode.f1.RS];
 
-		setcarry();
+		setCarry();
     }
 	else //I=1
 	{
@@ -213,12 +213,12 @@ void VirtualMachine::subc()
       else if(objCode.f2.RD < 0 && objCode.f2.AC < 0 && ((objCode.f2.RD + objCode.f2.AC) >= 0))
          sr = sr | 0x00000010;
 	
-		if ( getcarry() ) 
+		if ( getCarry() ) 
 			r[objCode.f2.RD] -= objCode.f2.AC - 1;
-		else//no carry
+		else//no Carry
 			r[objCode.f2.RD] -= objCode.f2.AC;
 
-		setcarry();
+		setCarry();
 	}
 }	
 	
@@ -251,7 +251,7 @@ void VirtualMachine::shl()
 {
 	clock += 1;
 	r[objCode.f1.RD] = r[objCode.f1.RD] << 1;
-	setcarry();
+	setCarry();
 }
 
 void VirtualMachine::shla()
@@ -267,14 +267,14 @@ void VirtualMachine::shla()
 		r[objCode.f1.RD] = r[objCode.f1.RD] & 0x7FFFFFFF;//fixing the sign bit to 0
 	}
 
-	setcarry();
+	setCarry();
 }    
 
 void VirtualMachine::shr()
 {
 	clock += 1;
 	if ( r[objCode.f1.RD] & 1)//check if 1st bit is 1
-		sr = sr | 1;//set carry if 1st bit is 1
+		sr = sr | 1;//set Carry if 1st bit is 1
 
 	r[objCode.f1.RD] = r[objCode.f1.RD] >> 1;
 }       
@@ -283,7 +283,7 @@ void VirtualMachine::shra()
 {
 	clock += 1;
 	if(r[objCode.f1.RD] & 1)// check if 1st bit is 1
-		sr = sr | 1;//set carry if 1st bit is 1
+		sr = sr | 1;//set Carry if 1st bit is 1
 			
 	if ( r[objCode.f1.RD] < 0 ) {//check if r[RD] is negative
 		r[objCode.f1.RD] = r[objCode.f1.RD] >> 1;
