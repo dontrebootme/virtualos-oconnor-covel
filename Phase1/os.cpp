@@ -1,5 +1,5 @@
 #include "Assembler.h"
-//#include "VirtualMachine.h"
+#include "VirtualMachine.h"
 
 main(int argc, char *argv[])
 {	
@@ -11,9 +11,9 @@ main(int argc, char *argv[])
 		if(*(file.end()-2) == '.' && *(file.end()-1) == 's')
 			{
 				Assembler as;
-	//			VirtualMachine vm;
+				VirtualMachine vm;
 				as.assemble(file);
-	//			vm.run(file);
+				vm.run(file);
 			}
 		else
 			cout << "Improper suffix used, please rename your assembly program with proper suffix.\n";
