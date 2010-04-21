@@ -21,7 +21,7 @@ void VirtualMachine::run(string file)
 {
 	int temp;
 	wfile.assign(file,0,file.length()-2);
-	rfile=wfile=eraseFile;
+	rfile=wfile;
 	rfile+=".in";
 	wfile+=".out";	
 	

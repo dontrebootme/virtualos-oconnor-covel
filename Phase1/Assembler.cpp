@@ -49,7 +49,7 @@ void Assembler::assemble(string file)
 		cout << 	"Error opening file: " << file << endl;
 		exit(1);
 	}
-	cout << "assembler started for " << file << endl;	
+	cout << "Assembler started for " << file << endl;	
 	//Remove file extension and add new extension
 	outputName.assign(file,0,file.length()-2);
 	outputName += ".o";
@@ -57,12 +57,12 @@ void Assembler::assemble(string file)
 	objectFile.open(outputName.c_str(),ios::out);
 	
 	getline(assemblyFile, line);
-	cout << "reading instructions" << endl;
+	cout << "Reading instructions" << endl;
     while(!assemblyFile.eof()){
         int rd=-1, rs=-1; //initialize to invalid values
 
         istringstream str(line.c_str());
-        str >> op >> rd >> rs;
+        str >> op >> rd >> rs; //set variables to stream values
 		
 		//skip all comments and blank lines
 		if (line[0] == '!' || line.empty())
@@ -136,12 +136,12 @@ void Assembler::assemble(string file)
 		else
 		{
                         cout << "Failed to assemble the following instruction:   ";
-						if (rd != -1 && rs != -11)
-                                 cout << op << " " << rd << " " << rs << endl;
+			if (rd != -1 && rs != -11)
+                        	cout << op << " " << rd << " " << rs << endl;
                         else
                                 cout << op << endl;
                         if(rd != -1 && rs == -1)
-							cout << op << " " << rd << endl;
+				cout << op << " " << rd << endl;
 
                         cout << "Assembler is now exiting!\n";
                         exit(2);
@@ -152,7 +152,7 @@ void Assembler::assemble(string file)
         getline(assemblyFile, line);
 
 	}
-	cout << "instructions assembled, continuing to VM" << endl;
+	cout << "Instructions assembled, continuing to VM" << endl;
 	assemblyFile.close();
 	objectFile.close();
 }
