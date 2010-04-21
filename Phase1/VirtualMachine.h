@@ -1,3 +1,12 @@
+        /************************************************
+        file name
+        your name
+        date
+        [how to compile]
+        [dependent files]
+        problem description
+        short (algorithm or DS) description
+        ***********************************************/
 #ifndef _VIRTUALMACHINE_H
 #define	_VIRTUALMACHINE_H
 

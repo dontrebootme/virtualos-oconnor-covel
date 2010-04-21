@@ -1,10 +1,19 @@
+/************************************************
+file name
+your name
+date
+[how to compile]
+[dependent files]
+problem description
+short (algorithm or DS) description
+***********************************************/
 #include "VirtualMachine.h"
 
 void VirtualMachine::setCarry()			
 {
 	
 	if(r[objCode.f1.RD] & 0x00010000) //check if 17th bit of RD is 1
-		sr = sr | 1; //set Carry flag if 17th bit of RD is 1
+		sr = sr | 0x1; //If it isnt set, set it
 	else 
 		sr = sr & 0x0000001E; //else Carry is 0
 }
@@ -12,9 +21,9 @@ void VirtualMachine::setCarry()
 bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 {											
 	if (sr & 1) // check if Carry flag is 1
-		return 1; // return 1
+		return true; // Carry Flag is Set
 	else 	   //otherwise
-		return 0; //return 0
+		return false; //Carry Flag is not Set
 }
 
 void VirtualMachine::run(string file)
@@ -53,6 +62,8 @@ void VirtualMachine::run(string file)
 		if(objCode.i == 49152) break;
 	}
 	dotOut_file << "Clock cycles: " << clock << endl; 
+	cout << "Clock cycles: " << clock << endl; 
+	cout << "Writing to .out file " << endl;
 	
 	dotO_file.close();
 	dotOut_file.close();
@@ -339,29 +350,61 @@ void VirtualMachine::putStat()
 
 void VirtualMachine::jump()
 {
-	clock += 1;
-	pc = objCode.f2.AC;
+	if (objCode.f2.AC < limit)
+	{	
+		clock += 1;
+		pc = objCode.f2.AC;
+	}
+	else
+	{
+		cout << "Runtime Error: Invalid Address" << endl;
+		exit(3);
+	}
 }
 
 void VirtualMachine::jumpl()
 {
-	clock += 1;
-	if (sr & 8)// if less is set
+	if (objCode.f2.AC < limit)
+	{	
+		clock += 1;
+		if (sr & 8)// if less is set
 		pc = objCode.f2.AC;
+	}	
+	else
+	{
+		cout << "Runtime Error: Invalid Address" << endl;
+		exit(3);
+	}
 }  
 
 void VirtualMachine::jumpe()
 {
-	clock += 1;
-	if (sr & 4)//if equal is set
+	if (objCode.f2.AC < limit)
+	{
+		clock += 1;
+		if (sr & 4)//if equal is set
 		pc = objCode.f2.AC;
+	}	
+	else
+	{
+		cout << "Runtime Error: Invalid Address" << endl;
+		exit(3);
+	}
 }     
 
 void VirtualMachine::jumpg()
 {
-	clock += 1;
-	if (sr & 2)//if greater is set
+	if (objCode.f2.AC < limit)
+	{	
+		clock += 1;
+		if (sr & 2)//if greater is set
 		pc = objCode.f2.AC;
+	}	
+	else
+	{
+		cout << "Runtime Error: Invalid Address" << endl;
+		exit(3);
+	}
 }
 
 void VirtualMachine::call()
@@ -391,6 +434,7 @@ void VirtualMachine::myReturn()
 
 void VirtualMachine::read()
 {
+	cout << "Now reading from .in file " << endl;
 	clock += 28;
 	dotIn_file >> r[objCode.f1.RD];//read from .in file and put in r[RD]
 }  
@@ -398,7 +442,14 @@ void VirtualMachine::read()
 void VirtualMachine::write()
 {
 	clock += 28;
-	dotOut_file << r[objCode.f1.RD] << endl;//write r[RD] in .out file 
+//Please see confusion below
+//	if((r[objCode.f1.RD] & 0x8000) > 0)
+//	{
+//		dotOut_file << (r[objCode.f1.RD] | 0xFFFF0000) << endl;
+//	}
+//	else	
+		dotOut_file << "Result: " <<  r[objCode.f1.RD] << endl;//write r[RD] in .out file 
+		cout << "Result: " <<  r[objCode.f1.RD] << endl;//cout r[RD] in .out file 
 }    
 
 void VirtualMachine::halt()
