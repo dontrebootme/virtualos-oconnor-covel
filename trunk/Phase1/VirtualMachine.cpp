@@ -50,7 +50,7 @@ void VirtualMachine::run(string file)
 //Used for debugging
 //		cout << "Clock: " << clock << "\tOpcode: " << objCode.f1.OP << endl;
 		if(objCode.i == 49152) break;
-	}	
+	}
 	dotOut_file << "Clock cycles: " << clock << endl; 
 	
 	dotO_file.close();
