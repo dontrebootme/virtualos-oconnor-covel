@@ -14,7 +14,7 @@ Assembler::Assembler()
 	opcode["subi"] = 4;	
 	opcode["subc"] = 5;	
 	opcode["subci"] = 5;	
-        opcode["and"] = 6;	
+	opcode["and"] = 6;	
 	opcode["andi"] = 6;	
 	opcode["xor"] = 7;      
 	opcode["xori"] = 7;     
@@ -108,7 +108,7 @@ void Assembler::assemble(string file)
 				 op == "getstat" || op == "putstat" || op == "read" || op == "write" ))
                 {
 		  	instrNum = opcode[op] << 11;
-                	instrNum += rd << 9;
+           	instrNum += rd << 9;
 		}
 
 		else if ( rd >= 0 && rd < 4 && //RD is a valid register
@@ -134,12 +134,10 @@ void Assembler::assemble(string file)
 		else
 		{
                         cout << "Failed to assemble the following instruction:   ";
-
-                        if(rd != -1 && rs != -1)
-                                cout << op << " " << rd << " " << rs << endl;
+						if (rd != -1 && rs != -11)
+                                 cout << op << " " << rd << " " << rs << endl;
                         else
                                 cout << op << endl;
-
                         if(rd != -1 && rs == -1)
 							cout << op << " " << rd << endl;
 
