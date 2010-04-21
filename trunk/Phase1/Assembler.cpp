@@ -57,7 +57,7 @@ void Assembler::assemble(string file)
 	
 	getline(assemblyFile, line);
     while(!assemblyFile.eof()){
-        int rd=-1, rs=-1, constant=-129; //initialize to invalid values
+        int rd=-1, rs=-1; //initialize to invalid values
 
         istringstream str(line.c_str());
         str >> op >> rd >> rs;

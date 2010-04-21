@@ -1,7 +1,7 @@
 #include "Assembler.h"
 #include "VirtualMachine.h"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {	
 	if(argc == 1 || argc >= 3)
 		cout << "Missing argument or too many arguments.\n";
