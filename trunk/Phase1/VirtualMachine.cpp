@@ -358,7 +358,7 @@ void VirtualMachine::jump()
 	else
 	{
 		cout << "Runtime Error: Invalid Address" << endl;
-		exit(3);
+		objCode.i = 49152;
 	}
 }
 
@@ -373,7 +373,7 @@ void VirtualMachine::jumpl()
 	else
 	{
 		cout << "Runtime Error: Invalid Address" << endl;
-		exit(3);
+		objCode.i = 49152;
 	}
 }  
 
@@ -388,7 +388,7 @@ void VirtualMachine::jumpe()
 	else
 	{
 		cout << "Runtime Error: Invalid Address" << endl;
-		exit(3);
+		objCode.i = 49152;
 	}
 }     
 
@@ -403,7 +403,7 @@ void VirtualMachine::jumpg()
 	else
 	{
 		cout << "Runtime Error: Invalid Address" << endl;
-		exit(3);
+		objCode.i = 49152;
 	}
 }
 
