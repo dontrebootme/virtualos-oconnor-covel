@@ -73,11 +73,11 @@ class VirtualMachine {
 		instruction objCode;
 		string wfile;
 		string rfile;
-		ifstream dotO_File;
-		ifstream dotIn_File;
-		ofstream dotOut_File;
+		ifstream dotO_file;
+		ifstream dotIn_file;
+		ofstream dotOut_file;
 		int ir, sr, limit, pc, base, sp, clock;
-		vector<FP> fmap;
+		vector<FP> funcMap;
 	};
 #endif	/* _VIRTUALMACHINE_H */
 
