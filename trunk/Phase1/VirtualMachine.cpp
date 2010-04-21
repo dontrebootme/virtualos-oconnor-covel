@@ -28,11 +28,11 @@ void VirtualMachine::run(string file)
 	file.erase(file.end()-2,file.end());
 	file += ".o";	
 	
-	dotO_File.open(file.c_str(), ios::in);//open .o file for reading
-	dotIn_File.open(rfile.c_str(),ios::in);//open .in file for reading
-	dotOut_File.open(wfile.c_str(), ios::out);//opening .out file for writing
+	dotO_file.open(file.c_str(), ios::in);//open .o file for reading
+	dotIn_file.open(rfile.c_str(),ios::in);//open .in file for reading
+	dotOut_file.open(wfile.c_str(), ios::out);//opening .out file for writing
 
-	for(; dotO_File >> temp; limit++) //loading mem with program
+	for(; dotO_file >> temp; limit++) //loading mem with program
 		mem[limit] = temp;
 
 	for(;;)//entering infinit loop of fetching ins
@@ -40,67 +40,69 @@ void VirtualMachine::run(string file)
 		ir = mem[pc];
 		pc++;
 		objCode.i = ir;
-		(this->*fmap[objCode.f1.OP])();
+		(this->*funcMap[objCode.f1.OP])();
 		
 		if(sp < (limit + 6))
 		{
-			dotOut_File << "Memory is full!\n";
+			dotOut_file << "Memory is full!\n";
 			break;
 		}
-
+		cout << "Clock: " << clock << "\tOpcode: " << objCode.f1.OP << endl;
 		if(objCode.i == 49152) break;
 	}	
-	dotOut_File << "Clock cycles: " << clock << endl; 
+	dotOut_file << "Clock cycles: " << clock << endl; 
 	
-	dotOut_File.close();
-	dotO_File.close();
-	dotIn_File.close();
+	dotO_file.close();
+	dotOut_file.close();
+	dotIn_file.close();
 }
 
 VirtualMachine::VirtualMachine()
 {
 	//initializing data types
-	fmap.reserve(26);
+	funcMap.reserve(26);
 	mem.reserve(256);
 	r.reserve(4);
 	clock = sr = base = pc = limit = 0;
 	sp = 256;
 
 	//building function map in a vector
-	fmap[0] = &VirtualMachine::load; 		fmap[1] = &VirtualMachine::store;
-	fmap[2] = &VirtualMachine::add;			fmap[3] = &VirtualMachine::addc;		
-	fmap[4] = &VirtualMachine::sub;			fmap[5] = &VirtualMachine::subc;
-	fmap[6] = &VirtualMachine::and_;		fmap[7] = &VirtualMachine::xor_;
-	fmap[8] = &VirtualMachine::compl_;		fmap[9] = &VirtualMachine::shl;
-	fmap[10] = &VirtualMachine::shla;		fmap[11] = &VirtualMachine::shr;
-	fmap[12] = &VirtualMachine::shra;		fmap[13] = &VirtualMachine::compr;
-	fmap[14] = &VirtualMachine::getstat; 		fmap[15] = &VirtualMachine::putstat;
-	fmap[16] = &VirtualMachine::jump;		fmap[17] = &VirtualMachine::jumpl;
-	fmap[20] = &VirtualMachine::jumpe;		fmap[19] = &VirtualMachine::jumpg;
-	fmap[20] = &VirtualMachine::call;		fmap[21] = &VirtualMachine::return_;
-	fmap[22] = &VirtualMachine::read;		fmap[23] = &VirtualMachine::write;
-	fmap[24] = &VirtualMachine::halt;		fmap[25] = &VirtualMachine::noop;
+	funcMap[0] = &VirtualMachine::load; 		funcMap[1] = &VirtualMachine::store;
+	funcMap[2] = &VirtualMachine::add;		funcMap[3] = &VirtualMachine::addc;		
+	funcMap[4] = &VirtualMachine::sub;		funcMap[5] = &VirtualMachine::subc;
+	funcMap[6] = &VirtualMachine::and_;		funcMap[7] = &VirtualMachine::xor_;
+	funcMap[8] = &VirtualMachine::compl_;		funcMap[9] = &VirtualMachine::shl;
+	funcMap[10] = &VirtualMachine::shla;		funcMap[11] = &VirtualMachine::shr;
+	funcMap[12] = &VirtualMachine::shra;		funcMap[13] = &VirtualMachine::compr;
+	funcMap[14] = &VirtualMachine::getstat;		funcMap[15] = &VirtualMachine::putstat;
+	funcMap[16] = &VirtualMachine::jump;		funcMap[17] = &VirtualMachine::jumpl;
+	funcMap[18] = &VirtualMachine::jumpe;		funcMap[19] = &VirtualMachine::jumpg;
+	funcMap[20] = &VirtualMachine::call;		funcMap[21] = &VirtualMachine::return_;
+	funcMap[22] = &VirtualMachine::read;		funcMap[23] = &VirtualMachine::write;
+	funcMap[24] = &VirtualMachine::halt;		funcMap[25] = &VirtualMachine::noop;
 
 }
 
-void VirtualMachine::load()
+void VirtualMachine::load() 
 {
-	if (objCode.f1.I == 0) //If I = 0
+	if ( objCode.f1.I == 0 ) //I=0
 		{
 			r[objCode.f2.RD] = mem[objCode.f2.AC];
-			clock +=4;
+			clock += 4;
 		}
-	else // If I = 1
+	else //I = 1
 		{
 			r[objCode.f2.RD] = objCode.f2.AC;
-			clock +=1;
+			clock += 1;
 		}
 }
-void VirtualMachine::store()
+		
+void VirtualMachine::store() 
 {
-	mem[objCode.f2.AC] = r[objCode.f2.RD];
 	clock += 4;
+	mem[objCode.f2.AC] = r[objCode.f2.RD];
 }
+		
 void VirtualMachine::add() 
 {
 	clock += 1;
@@ -216,7 +218,7 @@ void VirtualMachine::subc()
 
 		setcarry();
 	}
-}
+}	
 	
 void VirtualMachine::and_()
 {
@@ -370,7 +372,7 @@ void VirtualMachine::call()
 	
 	mem[--sp] = sr;//pushing sp
 	
-	pc = objCode.f2.AC;//loading pc to jumping ACess
+	pc = objCode.f2.AC;//loading pc to jumping address
 }      
 
 void VirtualMachine::return_()
@@ -388,13 +390,13 @@ void VirtualMachine::return_()
 void VirtualMachine::read()
 {
 	clock += 28;
-	dotIn_File >> r[objCode.f1.RD];//read from .in file and put in r[RD]
+	dotIn_file >> r[objCode.f1.RD];//read from .in file and put in r[RD]
 }  
 
 void VirtualMachine::write()
 {
 	clock += 28;
-	dotOut_File << r[objCode.f1.RD] << endl;//write r[RD] in .out file 
+	dotOut_file << r[objCode.f1.RD] << endl;//write r[RD] in .out file 
 }    
 
 void VirtualMachine::halt()
