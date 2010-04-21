@@ -325,13 +325,13 @@ void VirtualMachine::compr()
 	}
 }    
 
-void VirtualMachine::getstat()
+void VirtualMachine::getStat()
 {
 	clock += 1;
 	r[objCode.f1.RD] = sr;
 }
 
-void VirtualMachine::putstat()
+void VirtualMachine::putStat()
 {
 	clock += 1;
 	sr = r[objCode.f1.RD];
