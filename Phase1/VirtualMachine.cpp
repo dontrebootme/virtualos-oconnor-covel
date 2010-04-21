@@ -3,7 +3,7 @@
 void VirtualMachine::setCarry()			
 {
 	
-	if(r[objCode.f1.RD] & 0x00010000) 
+	if(r[objCode.f1.RD] & 0x00010000) //check if 17th bit of RD is 1
 		sr = sr | 1; //set carry flag if 17th bit of RD is 1
 	else 
 		sr = sr & 0x0000001E; //else carry is 0
@@ -11,27 +11,28 @@ void VirtualMachine::setCarry()
 
 bool VirtualMachine::getCarry()	//return 1 if carry flag is set
 {											
-	if (sr & 1) 
-		return 1;							
-	else 
-		return 0;
+	if (sr & 1) // check if carry flag is 1
+		return 1; // return 1
+	else 	   //otherwise
+		return 0; //return 0
 }
 
 void VirtualMachine::run(string file)
 {
 	int temp;
 	wfile.assign(file,0,file.length()-2);
-	rfile=wfile;
+	rfile=wfile=eraseFile;
 	rfile+=".in";
-	wfile+=".out";
+	wfile+=".out";	
 	
-	file.erase(file.end()-2,file.end());
-	file += ".o";	
+	file.erase(file.end()-2,file.end()); // remove last two characters of the filename (e.g prog.s -> prog)
+	file += ".o";	//add .o extension to filename (e.g prog -> prog.o)
 	
 	dotO_file.open(file.c_str(), ios::in);//open .o file for reading
 	dotIn_file.open(rfile.c_str(),ios::in);//open .in file for reading
-	dotOut_file.open(wfile.c_str(), ios::out);//opening .out file for writing
-
+	dotOut_file.open(wfile.c_str(), ios::out);//open .out file for writing
+	
+	cout << "Now reading prog.o file for instructions" << endl;
 	for(; dotO_file >> temp; limit++) //loading mem with program
 		mem[limit] = temp;
 
