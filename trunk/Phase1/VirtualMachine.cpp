@@ -1,15 +1,15 @@
 #include "VirtualMachine.h"
 
-void VirtualMachine::setcarry()			
+void VirtualMachine::setCarry()			
 {
 	
-	if(r[objCode.f1.RD] & 0x00010000) 		
+	if(r[objCode.f1.RD] & 0x00010000) 
 		sr = sr | 1; //set carry flag if 17th bit of RD is 1
 	else 
 		sr = sr & 0x0000001E; //else carry is 0
 }
 
-bool VirtualMachine::getcarry()	//return 1 if carry flag is set
+bool VirtualMachine::getCarry()	//return 1 if carry flag is set
 {											
 	if (sr & 1) 
 		return 1;							
@@ -47,7 +47,8 @@ void VirtualMachine::run(string file)
 			dotOut_file << "Memory is full!\n";
 			break;
 		}
-		cout << "Clock: " << clock << "\tOpcode: " << objCode.f1.OP << endl;
+//Used for debugging
+//		cout << "Clock: " << clock << "\tOpcode: " << objCode.f1.OP << endl;
 		if(objCode.i == 49152) break;
 	}	
 	dotOut_file << "Clock cycles: " << clock << endl; 
@@ -68,16 +69,16 @@ VirtualMachine::VirtualMachine()
 
 	//building function map in a vector
 	funcMap[0] = &VirtualMachine::load; 		funcMap[1] = &VirtualMachine::store;
-	funcMap[2] = &VirtualMachine::add;		funcMap[3] = &VirtualMachine::addc;		
+	funcMap[2] = &VirtualMachine::add;		funcMap[3] = &VirtualMachine::addc;
 	funcMap[4] = &VirtualMachine::sub;		funcMap[5] = &VirtualMachine::subc;
-	funcMap[6] = &VirtualMachine::and_;		funcMap[7] = &VirtualMachine::xor_;
-	funcMap[8] = &VirtualMachine::compl_;		funcMap[9] = &VirtualMachine::shl;
+	funcMap[6] = &VirtualMachine::myAnd;		funcMap[7] = &VirtualMachine::myXor;
+	funcMap[8] = &VirtualMachine::myCompl;		funcMap[9] = &VirtualMachine::shl;
 	funcMap[10] = &VirtualMachine::shla;		funcMap[11] = &VirtualMachine::shr;
 	funcMap[12] = &VirtualMachine::shra;		funcMap[13] = &VirtualMachine::compr;
-	funcMap[14] = &VirtualMachine::getstat;		funcMap[15] = &VirtualMachine::putstat;
+	funcMap[14] = &VirtualMachine::getStat;		funcMap[15] = &VirtualMachine::putStat;
 	funcMap[16] = &VirtualMachine::jump;		funcMap[17] = &VirtualMachine::jumpl;
 	funcMap[18] = &VirtualMachine::jumpe;		funcMap[19] = &VirtualMachine::jumpg;
-	funcMap[20] = &VirtualMachine::call;		funcMap[21] = &VirtualMachine::return_;
+	funcMap[20] = &VirtualMachine::call;		funcMap[21] = &VirtualMachine::myReturn;
 	funcMap[22] = &VirtualMachine::read;		funcMap[23] = &VirtualMachine::write;
 	funcMap[24] = &VirtualMachine::halt;		funcMap[25] = &VirtualMachine::noop;
 
@@ -220,7 +221,7 @@ void VirtualMachine::subc()
 	}
 }	
 	
-void VirtualMachine::and_()
+void VirtualMachine::myAnd()
 {
 	clock += 1;
 	if ( objCode.f1.I == 0 ) //I=0
@@ -230,7 +231,7 @@ void VirtualMachine::and_()
 }	
 
 
-void VirtualMachine::xor_()
+void VirtualMachine::myXor()
 {
 	clock += 1;
 	if ( objCode.f1.I == 0 ) 
@@ -239,7 +240,7 @@ void VirtualMachine::xor_()
 		r[objCode.f2.RD] = r[objCode.f2.RD] ^ objCode.f2.AC;
 }		
 
-void VirtualMachine::compl_()
+void VirtualMachine::myCompl()
 {
 	clock += 1;
 	r[objCode.f1.RD] = ~r[objCode.f1.RD];
@@ -375,7 +376,7 @@ void VirtualMachine::call()
 	pc = objCode.f2.AC;//loading pc to jumping address
 }      
 
-void VirtualMachine::return_()
+void VirtualMachine::myReturn()
 {
 	clock += 1;
 	
