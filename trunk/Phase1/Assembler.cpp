@@ -1,3 +1,12 @@
+        /************************************************
+        file name
+        your name
+        date
+        [how to compile]
+        [dependent files]
+        problem description
+        short (algorithm or DS) description
+        ***********************************************/
 #include "Assembler.h"
 
 Assembler::Assembler()
