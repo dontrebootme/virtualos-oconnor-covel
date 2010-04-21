@@ -9,6 +9,7 @@
 
 using namespace std;
 
+//from union.cpp
 class format1 {
 	public:
 		unsigned UNUSED:6;//UNUSED[5:0]
@@ -18,6 +19,7 @@ class format1 {
 		unsigned OP:5;		//OP[15:11]
 	};
 
+//from union.cpp
 class format2 {
 	public:
 		unsigned AC:8;	//AC[7:0]
@@ -25,7 +27,8 @@ class format2 {
 		unsigned RD:2;		//RD[10:9]
 		unsigned OP:5;		//OP[15:11]
 	};
-	
+
+//from union.cpp less function 3	
 union instruction {
 	int i;
 	format1 f1;
@@ -42,28 +45,28 @@ class VirtualMachine {
 		void addc();
 		void sub();
 		void subc();
-		void and_();
-		void xor_();
-		void compl_();
+		void myAnd();
+		void myXor();
+		void myCompl();
 		void shl();
 		void shla();
 		void shr();
 		void shra();
 		void compr();
-		void getstat();
-		void putstat();
+		void getStat();
+		void putStat();
 		void jump();
 		void jumpl();
 		void jumpe();
 		void jumpg();
 		void call();
-		void return_();
+		void myReturn();
 		void read();
 		void write();
 		void halt();
 		void noop();
-		void setcarry();
-		bool getcarry();
+		void setCarry();
+		bool getCarry();
 		void run(string);
 		
 	private:

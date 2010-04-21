@@ -49,13 +49,15 @@ void Assembler::assemble(string file)
 		cout << 	"Error opening file: " << file << endl;
 		exit(1);
 	}
-	
+	cout << "assembler started for " << file << endl;	
 	//Remove file extension and add new extension
 	outputName.assign(file,0,file.length()-2);
 	outputName += ".o";
+	cout << outputName << " created" << endl;
 	objectFile.open(outputName.c_str(),ios::out);
 	
 	getline(assemblyFile, line);
+	cout << "reading instructions" << endl;
     while(!assemblyFile.eof()){
         int rd=-1, rs=-1; //initialize to invalid values
 
@@ -150,6 +152,7 @@ void Assembler::assemble(string file)
         getline(assemblyFile, line);
 
 	}
+	cout << "instructions assembled, continuing to VM" << endl;
 	assemblyFile.close();
 	objectFile.close();
 }
