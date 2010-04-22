@@ -1,12 +1,12 @@
 /************************************************
-file name
-your name
-date
-[how to compile]
-[dependent files]
-problem description
-short (algorithm or DS) description
-***********************************************/
+ * VirtualMachine.cpp
+ * Patrick O'Connor, Timothy Covel
+ * Apr/21/2010
+ * See os.cpp for compile instructions
+ * Depends on VirtualMachine.h and Assembled instructions
+ *
+ * Virtual Machine for Processing Assembled Instructions
+ * ***********************************************/
 #include "VirtualMachine.h"
 
 void VirtualMachine::setCarry()			
@@ -357,7 +357,7 @@ void VirtualMachine::jump()
 	}
 	else
 	{
-		cout << "Runtime Error: Invalid Address" << endl;
+		cout << "!!!Runtime Error: Invalid Address. Program Halted!!!" << endl;
 		objCode.i = 49152;
 	}
 }
@@ -372,7 +372,7 @@ void VirtualMachine::jumpl()
 	}	
 	else
 	{
-		cout << "Runtime Error: Invalid Address" << endl;
+		cout << "!!!Runtime Error: Invalid Address. Program Halted!!!" << endl;
 		objCode.i = 49152;
 	}
 }  

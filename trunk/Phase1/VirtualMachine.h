@@ -1,12 +1,11 @@
-        /************************************************
-        file name
-        your name
-        date
-        [how to compile]
-        [dependent files]
-        problem description
-        short (algorithm or DS) description
-        ***********************************************/
+/************************************************
+ * VirtualMachine.h
+ * Patrick O'Connor, Timothy Covel
+ * Apr/21/2010
+ * See os.cpp for compile instructions
+ * 
+ * classes and union for virtual operating system instruction set.
+ ************************************************/
 #ifndef _VIRTUALMACHINE_H
 #define	_VIRTUALMACHINE_H
 

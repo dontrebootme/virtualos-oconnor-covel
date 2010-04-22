@@ -1,12 +1,13 @@
-        /************************************************
-        file name
-        your name
-        date
-        [how to compile]
-        [dependent files]
-        problem description
-        short (algorithm or DS) description
-        ***********************************************/
+/************************************************
+ * Assembler.h
+ * Patrick O'Connor, Timothy Covel
+ * Apr/21/2010
+ * See os.cpp for compile instructions
+ * 
+ *
+ * Assembler Classes  for virtual operating system instruction set.
+ * ***********************************************/
+
 #ifndef _ASSEMBLER_H
 #define	_ASSEMBLER_H
 #include <iostream>
