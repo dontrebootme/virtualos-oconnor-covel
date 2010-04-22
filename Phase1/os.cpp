@@ -1,12 +1,14 @@
-        /************************************************
-        file name
-        your name
-        date
-        [how to compile]
-        [dependent files]
-        problem description
-        short (algorithm or DS) description
-        ***********************************************/
+/************************************************
+ * os.cpp
+ * Patrick O'Connor, Timothy Covel
+ * Apr/21/2010
+ * to compile: g++ -o os os.cpp Assembler.cpp VirtualMachine.cpp
+ * to run: ./os prog.s
+ * Depends on Assembler.h Assembler.cpp VirtualMachine.h VirtualMachine.cpp
+ *
+ * Main program for running the assembler and virtual machine for
+ * the virtual operating system project, Phase 1
+*************************************************/
 #include "Assembler.h"
 #include "VirtualMachine.h"
 

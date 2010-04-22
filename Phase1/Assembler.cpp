@@ -1,12 +1,12 @@
-        /************************************************
-        file name
-        your name
-        date
-        [how to compile]
-        [dependent files]
-        problem description
-        short (algorithm or DS) description
-        ***********************************************/
+/************************************************
+ * Assembler.cpp
+ * Patrick O'Connor, Timothy Covel
+ * Apr/21/2010
+ * See os.cpp for compile instructions
+ * Depends on Assembler.h
+ *
+ * Assembler for virtual operating system instruction set.
+ * ***********************************************/
 #include "Assembler.h"
 
 Assembler::Assembler()
