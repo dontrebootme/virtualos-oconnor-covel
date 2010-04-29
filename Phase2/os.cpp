@@ -11,7 +11,38 @@
 *************************************************/
 #include "Assembler.h"
 #include "VirtualMachine.h"
+#include "os.h"
 
+
+	                                        
+OS::OS(){
+        AssembleProgs();
+	}
+
+void OS::AssembleProgs(){
+
+	system("ls *.s > progs");
+	fstream progList;
+	progList.open("progs",ios::in);
+	
+	string program;
+	
+	while(progList >> program){
+		as.assemble(program);
+	        PCB * p = new PCB;
+	        p -> pName = program;
+	        readyQ.push(p);
+	        pcb.push_back(p);
+	}
+}	
+
+
+main(){
+OS os;
+//os.run();
+}
+
+/*
 int main(int argc, char *argv[])
 {
 	system("ls *.s > progs");
@@ -31,4 +62,6 @@ int main(int argc, char *argv[])
 		else
 			cout << "Improper suffix used, please rename your assembly program with proper suffix.\n";
 	}
+
 }
+*/
