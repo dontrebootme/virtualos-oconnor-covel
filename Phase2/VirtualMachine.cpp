@@ -26,6 +26,10 @@ bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 		return false; //Carry Flag is not Set
 }
 
+void VirtualMachine::loadMemory(list<PCB *> &pcb)
+{
+}
+
 void VirtualMachine::run(string file)
 {
 	int temp;
