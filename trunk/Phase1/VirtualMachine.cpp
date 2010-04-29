@@ -41,7 +41,7 @@ void VirtualMachine::run(string file)
 	dotIn_file.open(rfile.c_str(),ios::in);//open .in file for reading
 	dotOut_file.open(wfile.c_str(), ios::out);//open .out file for writing
 	
-	cout << "Now reading prog.o file for instructions" << endl;
+	cout << "Now reading " << file << " file for instructions" << endl;
 	for(; dotO_file >> temp; limit++) //loading mem with program
 		mem[limit] = temp;
 
@@ -105,7 +105,14 @@ void VirtualMachine::load()
 		}
 	else //I = 1
 		{
-			r[objCode.f2.RD] = objCode.f2.AC;
+			if ((objCode.f2.AC & 0x80) > 0)
+				{
+					r[objCode.f2.RD] = (objCode.f2.AC | 0xffffff00);
+				}
+			else
+				{
+				r[objCode.f2.RD] = objCode.f2.AC;
+				}
 			clock += 1;
 		}
 }
@@ -131,13 +138,18 @@ void VirtualMachine::add()
 		setCarry();
      }
 	else {
-		
+			
 		if(objCode.f2.RD >= 0 && objCode.f2.AC >=0 && ((objCode.f2.RD + objCode.f2.AC) < 0))
 			sr = sr | 0x00000010;
 		else if(objCode.f2.RD < 0 && objCode.f2.AC < 0 && ((objCode.f2.RD + objCode.f2.AC) >= 0))
 			sr = sr | 0x00000010;
-		
-		r[objCode.f2.RD] += objCode.f2.AC;
+				
+		if ((objCode.f2.AC & 0x80) > 0)
+			{
+				r[objCode.f2.RD] += (objCode.f2.AC | 0xffffff00);
+			}
+			else
+				r[objCode.f2.RD] += objCode.f2.AC;
 		setCarry();
 	}
 }	
@@ -166,11 +178,24 @@ void VirtualMachine::addc()
 		else if(objCode.f2.RD < 0 && objCode.f2.AC < 0 && ((objCode.f2.RD + objCode.f2.AC) >= 0))
 			sr = sr | 0x00000010;
 		
-		if ( getCarry() ) 
-			r[objCode.f2.RD] += objCode.f2.AC + 1;
+		if ( getCarry() )
+		 { 
+			if ((objCode.f2.AC & 0x80) > 0)
+			{
+				r[objCode.f2.RD] += (objCode.f2.AC | 0xffffff00) + 1;
+			}
+			else
+				r[objCode.f2.RD] += objCode.f2.AC + 1;
+		}
 		else//Carry is not set
-			r[objCode.f2.RD] += objCode.f2.AC;
-		
+		{
+			if ((objCode.f2.AC & 0x80) > 0)
+			{
+				r[objCode.f2.RD] += (objCode.f2.AC | 0xffffff00);
+			}
+			else
+				r[objCode.f2.RD] += objCode.f2.AC;
+		}
 		setCarry();
 	}
 }
@@ -195,7 +220,12 @@ void VirtualMachine::sub()
 		else if(objCode.f2.RD < 0 && objCode.f2.AC < 0 && ((objCode.f2.RD + objCode.f2.AC) >= 0))
 			sr = sr | 0x00000010;
 		
-		r[objCode.f2.RD] -= objCode.f2.AC;
+		if ((objCode.f2.AC & 0x80) > 0)
+		{
+			r[objCode.f2.RD] -= (objCode.f2.AC | 0xffffff00);
+		}
+		else
+			r[objCode.f2.RD] -= objCode.f2.AC;
 		setCarry();
 	}
 }	
@@ -225,9 +255,19 @@ void VirtualMachine::subc()
          sr = sr | 0x00000010;
 	
 		if ( getCarry() ) 
-			r[objCode.f2.RD] -= objCode.f2.AC - 1;
+			if ((objCode.f2.AC & 0x80) > 0)
+			{
+				r[objCode.f2.RD] -= (objCode.f2.AC | 0xffffff00) - 1;
+			}
+			else
+				r[objCode.f2.RD] -= objCode.f2.AC - 1;
 		else//no Carry
-			r[objCode.f2.RD] -= objCode.f2.AC;
+			if ((objCode.f2.AC & 0x80) > 0)
+			{
+				r[objCode.f2.RD] -= (objCode.f2.AC | 0xffffff00);
+			}
+			else
+				r[objCode.f2.RD] -= objCode.f2.AC;
 
 		setCarry();
 	}
@@ -239,6 +279,11 @@ void VirtualMachine::myAnd()
 	if ( objCode.f1.I == 0 ) //I=0
 		r[objCode.f1.RD] = r[objCode.f1.RD] & r[objCode.f1.RS];
 	else //I=1
+		if ((objCode.f2.AC & 0x80) > 0)
+		{
+			r[objCode.f2.RD] = r[objCode.f2.RD] & (objCode.f2.AC | 0xffffff00);
+		}
+		else
 		r[objCode.f2.RD] = r[objCode.f2.RD] & objCode.f2.AC;
 }	
 
@@ -249,6 +294,11 @@ void VirtualMachine::myXor()
 	if ( objCode.f1.I == 0 ) 
 		r[objCode.f1.RD] = r[objCode.f1.RD] ^ r[objCode.f1.RS];
 	else 
+		if ((objCode.f2.AC & 0x80) > 0)
+		{
+			r[objCode.f2.RD] = r[objCode.f2.RD] ^ (objCode.f2.AC | 0xffffff00);
+		}
+		else
 		r[objCode.f2.RD] = r[objCode.f2.RD] ^ objCode.f2.AC;
 }		
 
@@ -442,14 +492,18 @@ void VirtualMachine::read()
 void VirtualMachine::write()
 {
 	clock += 28;
-//Please see confusion below
 //	if((r[objCode.f1.RD] & 0x8000) > 0)
 //	{
 //		dotOut_file << (r[objCode.f1.RD] | 0xFFFF0000) << endl;
 //	}
 //	else	
-		dotOut_file << "Result: " <<  r[objCode.f1.RD] << endl;//write r[RD] in .out file 
-		cout << "Result: " <<  r[objCode.f1.RD] << endl;//cout r[RD] in .out file 
+		if ((r[objCode.f1.RD] & 0x8000) > 0)
+		{
+			r[objCode.f1.RD] = (r[objCode.f1.RD] | 0xffff0000);
+		}
+
+		dotOut_file << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t######\n" << endl;//write r[RD] in .out file 
+		cout << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t#####\n" << endl;//cout r[RD] in .out file 
 }    
 
 void VirtualMachine::halt()
