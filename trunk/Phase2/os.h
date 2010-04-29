@@ -7,18 +7,6 @@
 #include <list>
 #include <queue>
 
-struct PCB{
-        vector<int> r;
-        int pc, sr, sp, base, limit, IO_clock;
-        int CPU_time, largest_stack_size, ta_time, io_time, waiting_time;
-        string pName;
-
-        ifstream pcbfin;//.in
-        ofstream pcbfout;//.out
-        fstream pcbfst;//.st
-};
-
-
 class OS{
 
 public:

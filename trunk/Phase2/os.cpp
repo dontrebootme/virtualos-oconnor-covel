@@ -34,6 +34,8 @@ void OS::AssembleProgs(){
 	        readyQ.push(p);
 	        pcb.push_back(p);
 	}
+vm.loadMemory(pcb);
+progList.close();
 }	
 
 

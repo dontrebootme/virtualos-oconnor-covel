@@ -14,8 +14,22 @@
 #include <string>
 #include <vector> 
 #include <map>
+#include <list>
+#include <cstdio>
+#include <cstdlib>
 
 using namespace std;
+
+struct PCB{
+        vector<int> r;
+        int pc, sr, sp, base, limit, IO_clock;
+        int CPU_time, largest_stack_size, ta_time, io_time, waiting_time;
+        string pName;
+
+        ifstream pcbfin;//.in
+        ofstream pcbfout;//.out
+        fstream pcbfst;//.st
+};
 
 //from union.cpp
 class format1 {
@@ -73,10 +87,13 @@ class VirtualMachine {
 		void write();
 		void halt();
 		void noop();
+
 		void setCarry();
 		bool getCarry();
+		
 		void run(string);
 		
+		void loadMemory(list<PCB *> &);
 	private:
 		typedef void (VirtualMachine::*FP)();
 		vector<int> mem;
