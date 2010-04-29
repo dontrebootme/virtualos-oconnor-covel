@@ -13,7 +13,9 @@
 #include "VirtualMachine.h"
 
 int main(int argc, char *argv[])
-{	
+{
+	system("ls *.s > progs");
+	
 	if(argc == 1 || argc >= 3)
 		cout << "Missing argument or too many arguments.\n";
 	else
