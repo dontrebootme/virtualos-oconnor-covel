@@ -26,9 +26,9 @@ struct PCB{
         int CPU_time, largest_stack_size, ta_time, io_time, waiting_time;
         string pName;
 
-        ifstream pcbfin;//.in
-        ofstream pcbfout;//.out
-        fstream pcbfst;//.st
+        ifstream pcbInFile;
+        ofstream pcbOutFile;
+        fstream pcbStateFile;
 };
 
 //from union.cpp
@@ -91,9 +91,12 @@ class VirtualMachine {
 		void setCarry();
 		bool getCarry();
 		
-		void run(string);
-		
+		//void run(string);
+		void run(PCB *);
+
 		void loadMemory(list<PCB *> &);
+		void saveState(PCB *);
+		void loadState(PCB *);
 	private:
 		typedef void (VirtualMachine::*FP)();
 		vector<int> mem;
@@ -104,8 +107,9 @@ class VirtualMachine {
 		ifstream dotO_file;
 		ifstream dotIn_file;
 		ofstream dotOut_file;
-		int ir, sr, limit, pc, base, sp, clock;
+		int ir, sr, limit, pc, base, sp, clock, counter, timeSlice;
 		vector<FP> funcMap;
+		PCB * current;
 	};
 #endif	/* _VIRTUALMACHINE_H */
 

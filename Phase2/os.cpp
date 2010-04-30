@@ -39,9 +39,10 @@ progList.close();
 }	
 
 
-main(){
+int main(){
 OS os;
 //os.run();
+return 0;
 }
 
 /*
