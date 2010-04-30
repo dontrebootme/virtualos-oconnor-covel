@@ -28,8 +28,198 @@ bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 
 void VirtualMachine::loadMemory(list<PCB *> &pcb)
 {
+        int temp;
+        string file;
+
+        list<PCB *>::iterator PCBit;
+
+        //removing the object files produced by g++ compiler
+        system("rm -f VirtualMachine.o assembler.o os.o");
+        system("ls *.o > objCodeFile");
+        ifstream objCodeFile;
+        ifstream objSubFile;
+        objCodeFile.open("objCodeFile",ios::in);
+
+        PCBit = pcb.begin();
+        for(;objCodeFile >> file;PCBit++){
+                objSubFile.open(file.c_str(), ios::in);
+                (*PCBit) -> r.reserve(4);
+
+                for(int i = 0; i < 4; i++)
+                        (*PCBit)->r[i] = 0;
+
+                (*PCBit)->sp=256;
+                (*PCBit)->sr=0;
+                (*PCBit)->CPU_time=0;
+                (*PCBit)->largest_stack_size=0;
+                (*PCBit)->ta_time=0;
+                (*PCBit)->io_time=0;
+                (*PCBit)->waiting_time=0;
+
+                if(PCBit == pcb.begin()){
+                        (*PCBit) -> pc = 0;
+                        (*PCBit) -> base= 0;
+                }
+                else{
+                        (*PCBit) -> pc = counter;
+                        (*PCBit) -> base = counter;
+                }
+
+                for(limit=0;objSubFile >> temp; counter++, limit++)
+                                mem[counter] = temp;        
+
+                (*PCBit) -> limit = limit;
+                objSubFile.close();
+
+                file = file.substr(0,file.length()-2);
+                file += ".in";
+                ((*PCBit)->pcbInFile).open(file.c_str(),ios::in);
+
+                file = file.substr(0,file.length()-3);
+                file += ".out";
+                ((*PCBit) -> pcbOutFile).open(file.c_str(),ios::out);
+
+        }
+        objCodeFile.close();
 }
 
+void VirtualMachine::saveState(PCB * p)
+{
+        for(int i=0; i < 4; i++)//saving registers
+                p->r[i] = r[i];
+
+        p->sr = sr;
+        p->sp= sp;
+        p->pc = pc;
+        p->base = base;
+        p->limit = limit;
+
+        string file = (p->pName);
+        file = file.substr(0,(file.length()-2));
+        file += ".st";
+
+
+        (p-> pcbStateFile).open(file.c_str(), ios::out);
+
+        if(sp != 256)
+        {
+                for(int i=sp; i != 256; i++)
+                        (p -> pcbStateFile) << mem[i] << endl;
+        }
+
+        (p-> pcbStateFile).close();
+}
+
+void VirtualMachine::loadState(PCB * p)
+{
+        int temp;
+
+        for(int i = 0; i < 4; i++)
+                r[i] = p->r[i];
+
+        sr = p->sr;
+        sp = p->sp;
+        pc = p->pc;
+        base = p->base;
+        limit=p->limit;
+
+        string file = (p->pName);
+        file = file.substr(0,(file.length()-2));
+        file += ".st";
+
+        (p->pcbStateFile).open(file.c_str(),ios::in);
+
+        if(sp != 256)
+        {
+                for(int i = sp; (p->pcbStateFile) >> temp;i++)
+                        mem[i] = temp;
+        }
+        (p->pcbStateFile).close();
+}
+
+void VirtualMachine::run(PCB * p)
+{
+        int temp, timeUp;
+
+        current = p;
+
+        //loadState(p);
+
+        timeUp = clock+timeSlice;
+        for(;;)//entering infinit loop of fetch-execute cycle
+        {
+                ir = mem[pc];
+                pc++;
+                objCode.i = ir;
+                (this->*funcMap[objCode.f1.OP])();
+
+                sr = sr & 0x1F;//clearing vm_return status
+
+                if(sp < (counter + 6))//stack overflow
+                {
+                        sr = sr | 0x80;//setting overflow flag
+                        saveState(p);
+                        break;
+                }
+
+                if(sp > 256)//stack underflow
+                {
+                        sr = sr | 0xA0;//underflow flag
+                        saveState(p);
+                        break;
+                }
+
+                if((objCode.f1.OP == 0 && objCode.f1.I == 0) || (objCode.f1.OP == 1))
+                {
+                        if(clock >= (timeUp+3))
+                        {
+                                saveState(p);
+                                break;
+                        }
+                }
+                else
+                {
+                        if(clock >= timeUp)
+                        {
+                                saveState(p);
+                                break;
+                        }
+                }
+
+                if((objCode.f1.OP == 0 && objCode.f1.I == 0) ||//load RD AC
+                        (objCode.f1.OP == 1) || //store RD AC
+                        (objCode.f1.OP == 16) || //jump AC
+                        (objCode.f1.OP == 17) || //jumpl AC
+                        (objCode.f1.OP == 18) || //jumpe AC
+                        (objCode.f1.OP == 19) || //jumpg AC
+                        (objCode.f1.OP == 20)) //call AC
+                {
+                        if(!((objCode.f2.AC+base < base + limit)
+                         && (objCode.f2.AC+base >= base) && !(objCode.f2.AC <= 0)))
+                        {
+                                sr = sr | 0x60; // out-bound was made 
+                                saveState(p);
+                                break;
+                        }
+                }
+
+                if(objCode.f1.OP == 22 || objCode.f1.OP == 23){
+                        sr = sr | 0x20;//io operation
+                        saveState(p);
+                        break;
+                }
+
+                if(objCode.i == 49152){
+                        sr = sr | 0x40;//halt instr
+                        p->ta_time = clock;
+                        saveState(p);
+                        break;
+                }
+        }
+}
+
+
+/*
 void VirtualMachine::run(string file)
 {
 	int temp;
@@ -73,7 +263,7 @@ void VirtualMachine::run(string file)
 	dotOut_file.close();
 	dotIn_file.close();
 }
-
+*/
 VirtualMachine::VirtualMachine()
 {
 	//initializing data types
