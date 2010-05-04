@@ -26,10 +26,10 @@ bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 		return false; //Carry Flag is not Set
 }
 
-int vm_sr()
-{
-	return ((sr & 0xE0) >> 5);
-}
+//int vm_sr()
+//{
+//	return ((sr & 0xE0) >> 5);
+//}
 
 void VirtualMachine::loadMemory(list<PCB *> &pcb)
 {

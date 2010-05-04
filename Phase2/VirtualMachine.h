@@ -97,8 +97,11 @@ class VirtualMachine {
 		void loadMemory(list<PCB *> &);
 		void saveState(PCB *);
 		void loadState(PCB *);
-		int vm_sr();
+	        int  vm_sr() {return ((sr & 0xE0) >> 5);}
+		//int vm_sr(sr);
 	private:
+		friend class OS;
+
 		typedef void (VirtualMachine::*FP)();
 		vector<int> mem;
 		vector<int> r;
