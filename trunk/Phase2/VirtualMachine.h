@@ -97,6 +97,7 @@ class VirtualMachine {
 		void loadMemory(list<PCB *> &);
 		void saveState(PCB *);
 		void loadState(PCB *);
+		int vm_sr();
 	private:
 		typedef void (VirtualMachine::*FP)();
 		vector<int> mem;
