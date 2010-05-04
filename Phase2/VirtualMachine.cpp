@@ -26,6 +26,11 @@ bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 		return false; //Carry Flag is not Set
 }
 
+int vm_sr()
+{
+	return ((sr & 0xE0) >> 5);
+}
+
 void VirtualMachine::loadMemory(list<PCB *> &pcb)
 {
         int temp;
@@ -64,9 +69,14 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
                         (*PCBit) -> pc = counter;
                         (*PCBit) -> base = counter;
                 }
-
+		
+		cout << "temp: " << temp << endl;
+		cout << "counter: " << counter << endl;
+		cout << "limit: " << limit << endl;
+ 
                 for(limit=0;objSubFile >> temp; counter++, limit++)
-                                mem[counter] = temp;        
+				cout << temp;
+				mem[counter] = temp;        
 
                 (*PCBit) -> limit = limit;
                 objSubFile.close();
@@ -142,8 +152,10 @@ void VirtualMachine::run(PCB * p)
         int temp, timeUp;
 
         current = p;
+	
+	cout << "current(before load): " << current << endl;
 
-        //loadState(p);
+        loadState(p);
 
         timeUp = clock+timeSlice;
         for(;;)//entering infinit loop of fetch-execute cycle
