@@ -86,16 +86,16 @@ while( true ){
                         	goto done;
                         break;
       	case 3://out-bound
-                        (running->pcbfout)
+                        (running->pcbOutFile)
                             << "An out-of-bound reference was made." << endl;
                         term_jobs.push_back(running);
                         break;
         case 4://stack overflow occured
-                        (running->pcbfout) << "Stack overflow occured." << endl;
+                        (running->pcbOutFile) << "Stack overflow occured." << endl;
                         term_jobs.push_back(running);
          		break;
       	case 5://Stack underflow occured
-                        (running->pcbfout) << "Stack underflow occured." << endl << "PROGRAM TERMINATED!" << endl;
+                        (running->pcbOutFile) << "Stack underflow occured." << endl << "PROGRAM TERMINATED!" << endl;
                         term_jobs.push_back(running);
         		break;
       	default:
@@ -135,15 +135,13 @@ list<PCB *>::iterator itr;
 itr = term_jobs.begin();
 
 int throughPut=0;
-//double asdf=0;
 for(;itr != term_jobs.end(); itr++)
 {
-        asdf += (*itr)->CPU_time;
-        (*itr)->pcbfout << "\nCPU Time: " << (*itr)->CPU_time << endl;
-        (*itr)->pcbfout << "Largest stack size: " << (*itr)->largest_stack_size << endl;
-        (*itr)->pcbfout << "I/O Time in waitingQ: " << (*itr)->io_time << endl;
-        (*itr)->pcbfout << "Waiting Time in readyQ: " << (*itr)->waiting_time << endl;
-        (*itr)->pcbfout << "Turn around time: "
+        (*itr)->pcbOutFile << "\nCPU Time: " << (*itr)->CPU_time << endl;
+        (*itr)->pcbOutFile << "Largest stack size: " << (*itr)->largest_stack_size << endl;
+        (*itr)->pcbOutFile << "I/O Time in waitingQ: " << (*itr)->io_time << endl;
+        (*itr)->pcbOutFile << "Waiting Time in readyQ: " << (*itr)->waiting_time << endl;
+        (*itr)->pcbOutFile << "Turn around time: "
                                         << static_cast<double>((*itr)->ta_time)/1000.0 << " second(s)\n";
         throughPut += (*itr)->ta_time;
 }
@@ -152,7 +150,6 @@ cout << "\nSystem Information: \n";
 cout << "\tCPU Utilization: " << setprecision(4)
          << static_cast<double>((vm.clock-idle_time))/static_cast<double>(vm.clock)*100 << "%\n";
 cout << "\tThroughput: " << throughPut/1000.0 << " second(s)\n\n";
-//cout << asdf/static_cast<double>(vm.clock) << endl;
 }
 
 
