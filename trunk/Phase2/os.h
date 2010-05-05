@@ -17,8 +17,8 @@ private:
         void AssembleProgs();
         Assembler as;
         VirtualMachine vm;
-        list<PCB *> pcb;
-        queue<PCB *> readyQ, waitQ;
+        list<PCB *> pcb, terminateJob;
+        queue<PCB *> readyQ, waitQ, runQ;
         PCB * running;
 };
 

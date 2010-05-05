@@ -59,13 +59,13 @@ while( true ){
                 running->CPU_time += (vm.clock-temp);
         }
 
-   	if( !waitingQ.empty() && (*waitingQ.front()).IO_clock <= vm.clock){
-                readyQ.push(waitingQ.front());
+   	if( !waitQ.empty() && (*waitQ.front()).IO_clock <= vm.clock){
+                readyQ.push(waitQ.front());
 
-                temp = vm.clock - (*waitingQ.front()).io_time;
-                (*waitingQ.front()).io_time += temp;
+                temp = vm.clock - (*waitQ.front()).io_time;
+                (*waitQ.front()).io_time += temp;
 
-                waitingQ.pop();
+                waitQ.pop();
         }
 
         int wait_stamp=0,ready_stamp=0;
@@ -77,26 +77,26 @@ while( true ){
                         break;
       	case 1://I/O operation occured
          		running->IO_clock = vm.clock + 26;
-                        waitingQ.push(running);
+                        waitQ.push(running);
                         wait_stamp = vm.clock;
                         break;
       	case 2://Halt instr occured
-         		term_jobs.push_back(running);
-                        if(term_jobs.size() == pcb.size())
+         		terminateJob.push_back(running);
+                        if(terminateJob.size() == pcb.size())
                         	goto done;
                         break;
       	case 3://out-bound
                         (running->pcbOutFile)
                             << "An out-of-bound reference was made." << endl;
-                        term_jobs.push_back(running);
+                        terminateJob.push_back(running);
                         break;
         case 4://stack overflow occured
                         (running->pcbOutFile) << "Stack overflow occured." << endl;
-                        term_jobs.push_back(running);
+                        terminateJob.push_back(running);
          		break;
       	case 5://Stack underflow occured
                         (running->pcbOutFile) << "Stack underflow occured." << endl << "PROGRAM TERMINATED!" << endl;
-                        term_jobs.push_back(running);
+                        terminateJob.push_back(running);
         		break;
       	default:
          	cout << "Invalid vm return status " << vm.vm_sr() << endl;
@@ -109,14 +109,14 @@ while( true ){
         //idle case
         if(readyQ.empty() && running == 0)
         {
-                for(;(*waitingQ.front()).IO_clock >= vm.clock; vm.clock++, idle_counter++);
+                for(;(*waitQ.front()).IO_clock >= vm.clock; vm.clock++, idle_counter++);
                 idle_time += idle_counter;
                 idle_counter = 0;
-                readyQ.push(waitingQ.front());
+                readyQ.push(waitQ.front());
                 temp = vm.clock - wait_stamp;
-                (*waitingQ.front()).io_time += temp;
+                (*waitQ.front()).io_time += temp;
 
-                waitingQ.pop();
+                waitQ.pop();
         }
         if(!readyQ.empty()){
                 running = readyQ.front();
@@ -132,14 +132,14 @@ while( true ){
 done:;
 
 list<PCB *>::iterator itr;
-itr = term_jobs.begin();
+itr = terminateJob.begin();
 
 int throughPut=0;
-for(;itr != term_jobs.end(); itr++)
+for(;itr != terminateJob.end(); itr++)
 {
         (*itr)->pcbOutFile << "\nCPU Time: " << (*itr)->CPU_time << endl;
         (*itr)->pcbOutFile << "Largest stack size: " << (*itr)->largest_stack_size << endl;
-        (*itr)->pcbOutFile << "I/O Time in waitingQ: " << (*itr)->io_time << endl;
+        (*itr)->pcbOutFile << "I/O Time in waitQ: " << (*itr)->io_time << endl;
         (*itr)->pcbOutFile << "Waiting Time in readyQ: " << (*itr)->waiting_time << endl;
         (*itr)->pcbOutFile << "Turn around time: "
                                         << static_cast<double>((*itr)->ta_time)/1000.0 << " second(s)\n";
