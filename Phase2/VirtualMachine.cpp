@@ -69,10 +69,6 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
                         (*PCBit) -> pc = counter;
                         (*PCBit) -> base = counter;
                 }
-		
-		cout << "temp: " << temp << endl;
-		cout << "counter: " << counter << endl;
-		cout << "limit: " << limit << endl;
  
                 for(limit=0;objSubFile >> temp; counter++, limit++)
 				cout << temp;
@@ -153,8 +149,6 @@ void VirtualMachine::run(PCB * p)
 
         current = p;
 	
-	cout << "current(before load): " << current << endl;
-
         loadState(p);
 
         timeUp = clock+timeSlice;
@@ -230,55 +224,11 @@ void VirtualMachine::run(PCB * p)
         }
 }
 
-
-/*
-void VirtualMachine::run(string file)
-{
-	int temp;
-	wfile.assign(file,0,file.length()-2);
-	rfile=wfile;
-	rfile+=".in";
-	wfile+=".out";	
-	
-	file.erase(file.end()-2,file.end()); // remove last two characters of the filename (e.g prog.s -> prog)
-	file += ".o";	//add .o extension to filename (e.g prog -> prog.o)
-	
-	dotO_file.open(file.c_str(), ios::in);//open .o file for reading
-	dotIn_file.open(rfile.c_str(),ios::in);//open .in file for reading
-	dotOut_file.open(wfile.c_str(), ios::out);//open .out file for writing
-	
-	cout << "Now reading " << file << " file for instructions" << endl;
-	for(; dotO_file >> temp; limit++) //loading mem with program
-		mem[limit] = temp;
-
-	for(;;)//entering infinit loop of fetching ins
-	{
-		ir = mem[pc];
-		pc++;
-		objCode.i = ir;
-		(this->*funcMap[objCode.f1.OP])();
-		
-		if(sp < (limit + 6))
-		{
-			dotOut_file << "Memory is full!\n";
-			break;
-		}
-//Used for debugging
-//		cout << "Clock: " << clock << "\tOpcode: " << objCode.f1.OP << endl;
-		if(objCode.i == 49152) break;
-	}
-	dotOut_file << "Clock cycles: " << clock << endl; 
-	cout << "Clock cycles: " << clock << endl; 
-	cout << "Writing to .out file " << endl;
-	
-	dotO_file.close();
-	dotOut_file.close();
-	dotIn_file.close();
-}
-*/
 VirtualMachine::VirtualMachine()
 {
 	//initializing data types
+	counter=0;
+	timeSlice = 15;
 	funcMap.reserve(26);
 	mem.reserve(256);
 	r.reserve(4);
@@ -306,7 +256,7 @@ void VirtualMachine::load()
 {
 	if ( objCode.f1.I == 0 ) //I=0
 		{
-			r[objCode.f2.RD] = mem[objCode.f2.AC];
+			r[objCode.f2.RD] = mem[objCode.f2.AC+base];
 			clock += 4;
 		}
 	else //I = 1
@@ -326,7 +276,7 @@ void VirtualMachine::load()
 void VirtualMachine::store() 
 {
 	clock += 4;
-	mem[objCode.f2.AC] = r[objCode.f2.RD];
+	mem[objCode.f2.AC+base] = r[objCode.f2.RD];
 }
 		
 void VirtualMachine::add() 
@@ -609,7 +559,7 @@ void VirtualMachine::jump()
 	if (objCode.f2.AC < limit)
 	{	
 		clock += 1;
-		pc = objCode.f2.AC;
+		pc = objCode.f2.AC+base;
 	}
 	else
 	{
@@ -624,7 +574,7 @@ void VirtualMachine::jumpl()
 	{	
 		clock += 1;
 		if (sr & 8)// if less is set
-		pc = objCode.f2.AC;
+		pc = objCode.f2.AC+base;
 	}	
 	else
 	{
@@ -639,7 +589,7 @@ void VirtualMachine::jumpe()
 	{
 		clock += 1;
 		if (sr & 4)//if equal is set
-		pc = objCode.f2.AC;
+		pc = objCode.f2.AC+base;
 	}	
 	else
 	{
@@ -654,7 +604,7 @@ void VirtualMachine::jumpg()
 	{	
 		clock += 1;
 		if (sr & 2)//if greater is set
-		pc = objCode.f2.AC;
+		pc = objCode.f2.AC+base;
 	}	
 	else
 	{
@@ -673,7 +623,7 @@ void VirtualMachine::call()
 	
 	mem[--sp] = sr;//pushing sp
 	
-	pc = objCode.f2.AC;//loading pc to jumping address
+	pc = objCode.f2.AC+base;//loading pc to jumping address
 }      
 
 void VirtualMachine::myReturn()
@@ -690,26 +640,23 @@ void VirtualMachine::myReturn()
 
 void VirtualMachine::read()
 {
-	cout << "Now reading from .in file " << endl;
+	//cout << "Now reading from .in file " << endl;
 	clock += 28;
-	dotIn_file >> r[objCode.f1.RD];//read from .in file and put in r[RD]
+	(current->pcbInFile) >> r[objCode.f1.RD];
+	//dotIn_file >> r[objCode.f1.RD];//read from .in file and put in r[RD]
 }  
 
 void VirtualMachine::write()
 {
 	clock += 28;
-//	if((r[objCode.f1.RD] & 0x8000) > 0)
-//	{
-//		dotOut_file << (r[objCode.f1.RD] | 0xFFFF0000) << endl;
-//	}
-//	else	
+		
 		if ((r[objCode.f1.RD] & 0x8000) > 0)
 		{
 			r[objCode.f1.RD] = (r[objCode.f1.RD] | 0xffff0000);
 		}
-
-		dotOut_file << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t######\n" << endl;//write r[RD] in .out file 
-		cout << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t#####\n" << endl;//cout r[RD] in .out file 
+	(current->pcbOutFile) << r[objCode.f1.RD] << endl;
+		//dotOut_file << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t######\n" << endl;//write r[RD] in .out file 
+		//cout << "\n#####\tResult: " <<  r[objCode.f1.RD] << "\t#####\n" << endl;//cout r[RD] in .out file 
 }    
 
 void VirtualMachine::halt()
