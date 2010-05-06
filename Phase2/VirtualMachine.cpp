@@ -71,7 +71,6 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
                 }
  
                 for(limit=0;objSubFile >> temp; counter++, limit++)
-				cout << temp;
 				mem[counter] = temp;        
 
                 (*PCBit) -> limit = limit;
@@ -615,7 +614,7 @@ void VirtualMachine::jumpg()
 
 void VirtualMachine::call()
 {
-	clock += 1;
+	clock += 4;
 	mem[--sp] = pc;//pushing pc
  	
 	for (int i = 0; i < 4; i++)//pushing r[0]~r[3]
@@ -628,7 +627,7 @@ void VirtualMachine::call()
 
 void VirtualMachine::myReturn()
 {
-	clock += 1;
+	clock += 4;
 	
 	sr = mem[sp++];//popping sr
 
