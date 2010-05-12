@@ -115,7 +115,7 @@ void OS::run(){
         //idle case
         if(readyQ.empty() && running == 0)
         {
-		cout << "waiting queue: " << waitQ.front() << endl << "vm clock: " << vm.clock << endl << "idle counter: " << idle_counter << endl;
+		cout << "waiting queue: " << waitQ.front() << endl << "vm clock: " << vm.clock << endl;
                 for(;(*waitQ.front()).IO_clock >= vm.clock; vm.clock++, idle_counter++);
                 idle_time += idle_counter;
                 idle_counter = 0;
@@ -156,7 +156,7 @@ void OS::run(){
 	cout << "\nSystem Information: \n";
 	cout << "\tCPU Utilization: " << setprecision(4)
          << static_cast<double>((vm.clock-idle_time))/static_cast<double>(vm.clock)*100 << "%\n";
-	cout << "\tThroughput: " << throughPut/1000.0 << " second(s)\n\n";
+	cout << "\tThroughput: " << throughPut/1000.0 << endl;
 }
 
 
