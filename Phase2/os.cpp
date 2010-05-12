@@ -75,30 +75,36 @@ void OS::run(){
                         readyQ.push(running);
                         ready_stamp = vm.clock;
                         break;
-      		case 1://I/O operation occured
-         		running->IO_clock = vm.clock + 26;
-                        waitQ.push(running);
-                        wait_stamp = vm.clock;
-                        break;
-      		case 2://Halt instr occured
+      		case 1://Halt instr occured
          		terminateJob.push_back(running);
                         if(terminateJob.size() == pcb.size())
                         	goto done;
                         break;
-      		case 3://out-bound
+      		case 2://out-bound
                         (running->pcbOutFile)
                             << "An out-of-bound reference was made." << endl;
                         terminateJob.push_back(running);
                         break;
-        	case 4://stack overflow occured
+        	case 3://stack overflow occured
                         (running->pcbOutFile) << "Stack overflow occured." << endl;
                         terminateJob.push_back(running);
          		break;
-      		case 5://Stack underflow occured
+      		case 4://Stack underflow occured
                         (running->pcbOutFile) << "Stack underflow occured." << endl << "PROGRAM TERMINATED!" << endl;
                         terminateJob.push_back(running);
         		break;
-      		default:
+      		case 6://I/O operation occured
+         		running->IO_clock = vm.clock + 26;
+                        waitQ.push(running);
+                        wait_stamp = vm.clock;
+                        break;
+      		case 7://I/O operation occured
+         		running->IO_clock = vm.clock + 26;
+                        waitQ.push(running);
+                        wait_stamp = vm.clock;
+                        break;
+      		
+		default:
          	cout << "Invalid vm return status " << vm.vm_sr() << endl;
          	break;
 	}//select
