@@ -89,7 +89,6 @@ void VirtualMachine::saveState(PCB * p)
                 p->r[i] = r[i];
 
         p->sr = sr;
-	//cout << "PCB_SR: " << p->sr << " SR: " << endl;
         p->sp= sp;
         p->pc = pc;
         p->base = base;
@@ -158,35 +157,42 @@ void VirtualMachine::run(PCB * p)
 
                 if(sp < (counter + 6))//stack overflow
                 {
-                        sr = sr | 0x80;//setting overflow flag
-                        saveState(p);
+                        sr = sr | 0x60;//setting overflow flag
+                        //cout << "Stack Overflow: " << sr << endl;
+			saveState(p);
                         break;
                 }
 
                 if(sp > 256)//stack underflow
                 {
-                        sr = sr | 0xA0;//underflow flag
+                        sr = sr | 0x80;//underflow flag
+                        //cout << "Stack Underflow: " << sr << endl;
                         saveState(p);
                         break;
                 }
+
 
                 if((objCode.f1.OP == 0 && objCode.f1.I == 0) || (objCode.f1.OP == 1))
                 {
                         if(clock >= (timeUp+3))
                         {
+				//cout << "timeUp: " << timeUp << " clock: " << clock << endl; 
                                 saveState(p);
+				//cout << "breaking 1" << endl;
                                 break;
                         }
                 }
+/*
                 else
                 {
                         if(clock >= timeUp)
                         {
                                 saveState(p);
+				cout << "breaking 2" << endl;
                                 break;
                         }
                 }
-
+*/
                 if((objCode.f1.OP == 0 && objCode.f1.I == 0) ||//load RD AC
                         (objCode.f1.OP == 1) || //store RD AC
                         (objCode.f1.OP == 16) || //jump AC
@@ -198,21 +204,34 @@ void VirtualMachine::run(PCB * p)
                         if(!((objCode.f2.AC+base < base + limit)
                          && (objCode.f2.AC+base >= base) && !(objCode.f2.AC <= 0)))
                         {
-                                sr = sr | 0x60; // out-bound was made 
-                                saveState(p);
+                                //sr = sr | 0x60; // out-bound was made 
+                                sr = sr | 0x40;
+				saveState(p);
+				//cout << "breaking 3" << endl;
                                 break;
                         }
                 }
 
-                if(objCode.f1.OP == 22 || objCode.f1.OP == 23){
-                        sr = sr | 0x20;//io operation
+		if(objCode.f1.OP == 22){
+                	//cout << "IO Operation, SR before: " << sr << endl;
+		        sr = sr | 0xF0;//io operation
+			//cout << "IO Operation: " << sr << endl;
+                        saveState(p);
+                        break;
+		}
+
+                if(objCode.f1.OP == 23){
+                	//cout << "IO Operation, SR before: " << sr << endl;
+		        sr = sr | 0xD0;//io operation
+			//cout << "IO Operation: " << sr << endl;
                         saveState(p);
                         break;
                 }
 
                 if(objCode.i == 49152){
-                        sr = sr | 0x40;//halt instr
+                        sr = sr | 0x20;//halt instr
                         p->ta_time = clock;
+			//cout << "halt instruction: " << sr << endl;
                         saveState(p);
                         break;
                 }

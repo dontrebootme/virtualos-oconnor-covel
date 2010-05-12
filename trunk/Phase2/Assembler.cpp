@@ -161,7 +161,7 @@ void Assembler::assemble(string file)
         getline(assemblyFile, line);
 
 	}
-	cout << "Instructions assembled, continuing to VM" << endl;
+	cout << "Instructions assembled, continuing to VM" << endl << endl;
 	assemblyFile.close();
 	objectFile.close();
 }
