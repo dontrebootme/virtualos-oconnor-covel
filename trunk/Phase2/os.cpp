@@ -69,7 +69,6 @@ void OS::run(){
 
         	int wait_stamp=0,ready_stamp=0;
         	
-		cout << vm.sr << " : " << vm.vm_sr() << endl;
 		switch(vm.vm_sr()){
 
       		case 0://Time slice occured
