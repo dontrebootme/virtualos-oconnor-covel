@@ -12,10 +12,10 @@
 void VirtualMachine::setCarry()			
 {
 	
-	if(r[objCode.f1.RD] & 0x00010000) //check if 17th bit of RD is 1
-		sr = sr | 0x1; //If it isnt set, set it
+	if(r[objCode.f1.RD] & 0x10000) //check if 17th bit of RD is 1
+		sr = sr | 1; //If it isnt set, set it
 	else 
-		sr = sr & 0x0000001E; //else Carry is 0
+		sr = sr & 0x1E; //else Carry is 0
 }
 
 bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
@@ -25,11 +25,6 @@ bool VirtualMachine::getCarry()	//return 1 if Carry flag is set
 	else 	   //otherwise
 		return false; //Carry Flag is not Set
 }
-
-//int vm_sr()
-//{
-//	return ((sr & 0xE0) >> 5);
-//}
 
 void VirtualMachine::loadMemory(list<PCB *> &pcb)
 {
