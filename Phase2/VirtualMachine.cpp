@@ -89,6 +89,7 @@ void VirtualMachine::saveState(PCB * p)
                 p->r[i] = r[i];
 
         p->sr = sr;
+	//cout << "PCB_SR: " << p->sr << " SR: " << endl;
         p->sp= sp;
         p->pc = pc;
         p->base = base;
