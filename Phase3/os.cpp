@@ -9,8 +9,6 @@
  * Main program for running the assembler and virtual machine for
  * the virtual operating system project, Phase 1
 *************************************************/
-#include "Assembler.h"
-#include "VirtualMachine.h"
 #include "os.h"
 
 	                                        
