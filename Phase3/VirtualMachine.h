@@ -13,6 +13,8 @@
 #include <fstream>
 #include <string>
 #include <vector> 
+#include <queue>
+#include <stack>
 #include <map>
 #include <list>
 #include <cstdio>
@@ -20,15 +22,27 @@
 
 using namespace std;
 
+struct Page{
+	int v_i, frame, limit, base;
+};
+
 struct PCB{
         vector<int> r;
         int pc, sr, sp, base, limit, IO_clock;
-        int CPU_time, largest_stack_size, ta_time, io_time, waiting_time;
+        int CPU_time, largest_stack_size, ta_time, io_time, waiting_time, pf, HR, wait_time_stamp, ready_time_stamp;
         string pName;
 
         ifstream pcbInFile;
         ofstream pcbOutFile;
         fstream pcbStateFile;
+	fstream pcbObjectFile;	
+
+        int page_counter, page_request, displ;
+        bool pf_triger, adj_pc;
+        queue<int> ref_str;
+        stack<int> kill_frames;
+
+	vector<Page *> page_table;
 };
 
 //from union.cpp
@@ -98,6 +112,12 @@ class VirtualMachine {
 		void saveState(PCB *);
 		void loadState(PCB *);
 	        int vm_sr() {return ((sr & 0xE0) >> 5);}
+
+                int getFrame(int);
+                int  getCurrentPage();
+                void CheckAddr(int);
+                void checkRange(PCB *p);
+		void init(PCB *p);
 		//int vm_sr(sr);
 	private:
 		friend class OS;
@@ -114,6 +134,11 @@ class VirtualMachine {
 		int ir, sr, limit, pc, base, sp, clock, counter, timeSlice;
 		vector<FP> funcMap;
 		PCB * current;
+
+                bool pageFault;
+                vector<int> avail_frames;
+                vector<Page *> TLB;
+                vector<int> frameTimeStamps;
 	};
 #endif	/* _VIRTUALMACHINE_H */
 
