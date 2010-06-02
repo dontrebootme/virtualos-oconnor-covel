@@ -23,13 +23,13 @@
 using namespace std;
 
 struct Page{
-	int v_i, frame, limit, base;
+	int validBit, frame, limit, base;
 };
 
 struct PCB{
         vector<int> r;
         int pc, sr, sp, base, limit, IO_clock;
-        int CPU_time, largest_stack_size, ta_time, io_time, waiting_time, pf, HR, wait_time_stamp, ready_time_stamp;
+        int CPU_time, largestStackSize, tTime, ioTime, waitTime, pf, HR, waitTimeStamp, readyTimeStamp;
         string pName;
 
         ifstream pcbInFile;
@@ -37,12 +37,12 @@ struct PCB{
         fstream pcbStateFile;
 	fstream pcbObjectFile;	
 
-        int page_counter, page_request, displ;
-        bool pf_triger, adj_pc;
-        queue<int> ref_str;
-        stack<int> kill_frames;
+        int pageCounter, pageRequest, displ;
+        bool triger, adPC;
+        queue<int> refStr;
+        stack<int> killFrames;
 
-	vector<Page *> page_table;
+	vector<Page *> pageTable;
 };
 
 //from union.cpp
