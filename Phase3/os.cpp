@@ -61,8 +61,8 @@ void OS::run(){
    		if( !waitQ.empty() && (*waitQ.front()).IO_clock <= vm.clock){
                 	readyQ.push(waitQ.front());
 
-                temp = vm.clock - (*waitQ.front()).io_time;
-                (*waitQ.front()).io_time += temp;
+                temp = vm.clock - (*waitQ.front()).ioTime;
+                (*waitQ.front()).ioTime += temp;
 
                 waitQ.pop();
         	}
@@ -121,14 +121,14 @@ void OS::run(){
                 idle_counter = 0;
                 readyQ.push(waitQ.front());
                 temp = vm.clock - wait_stamp;
-                (*waitQ.front()).io_time += temp;
+                (*waitQ.front()).ioTime += temp;
 
                 waitQ.pop();
         }
         if(!readyQ.empty()){
                 running = readyQ.front();
                 temp = vm.clock - ready_stamp;
-                (*readyQ.front()).waiting_time += temp;
+                (*readyQ.front()).waitTime += temp;
                 readyQ.pop();
         }
         else running = 0;
@@ -145,12 +145,12 @@ void OS::run(){
 	for(;itr != terminateJob.end(); itr++)
 	{
         (*itr)->pcbOutFile << "\nCPU Time: " << (*itr)->CPU_time << endl;
-        (*itr)->pcbOutFile << "Largest stack size: " << (*itr)->largest_stack_size << endl;
-        (*itr)->pcbOutFile << "I/O Time in waitQ: " << (*itr)->io_time << endl;
-        (*itr)->pcbOutFile << "Waiting Time in readyQ: " << (*itr)->waiting_time << endl;
+        (*itr)->pcbOutFile << "Largest stack size: " << (*itr)->largestStackSize << endl;
+        (*itr)->pcbOutFile << "I/O Time in waitQ: " << (*itr)->ioTime << endl;
+        (*itr)->pcbOutFile << "Waiting Time in readyQ: " << (*itr)->waitTime << endl;
         (*itr)->pcbOutFile << "Turn around time: "
-                                        << static_cast<double>((*itr)->ta_time)/1000.0 << " second(s)\n";
-        throughPut += (*itr)->ta_time;
+                                        << static_cast<double>((*itr)->tTime)/1000.0 << " second(s)\n";
+        throughPut += (*itr)->tTime;
 	}
 	cout << "\nCPU idled for: " << idle_time << " ticks.\n";
 	cout << "\nSystem Information: \n";
