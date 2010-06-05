@@ -6,6 +6,9 @@
 #include <iomanip>
 #include <list>
 #include <queue>
+#include <stack>
+#include <limits.h>
+#include <math.h>
 
 class OS{
 
@@ -32,7 +35,7 @@ private:
 	void printInfo(), checkWaiting(), loadPage(PCB * p);
 	void checkKillFrames(stack<int>), closeStreams(), idle(), nextJob();
 	bool checkPage(int, PCB *), FIFO, LRU;
-	int contextSwitch(), getEmptryFrame(), idleTime, idleCounter;
+	int contextSwitch(), getEmptyFrame(), idleTime, idleCounter;
 };
 
 #endif
