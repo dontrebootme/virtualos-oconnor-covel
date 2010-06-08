@@ -24,8 +24,8 @@ OS::OS(){
 
         AssembleProgs();
 	idleTime = idleCounter = 0;
-	FIFO = true;
-	LRU = false;
+	FIFO = false;
+	LRU = true;
 	}
 
 void OS::AssembleProgs(){
@@ -123,14 +123,8 @@ int OS::contextSwitch()
                 running->waitTimeStamp = vm.clock;
 		running->triger = false;
                 break;
-      	case 7://I/O operation occured
-        	running->IO_clock = vm.clock + 26;
-                waitQ.push(running);
-                running->waitTimeStamp = vm.clock;
-		running->triger = false;
-                break;
-	case 8://page fault  
-                running -> IO_clock = vm.clock + 40;
+	case 7://page fault  
+                running -> IO_clock = vm.clock + 35;
                 waitQ.push(running);
                 running -> waitTimeStamp = vm.clock;
                 running->triger = true;
@@ -147,6 +141,8 @@ int OS::contextSwitch()
 	}
 	vm.clock += 5;
 	running =0;
+
+return 0;
 }
 
 void OS::closeStreams()
@@ -274,13 +270,6 @@ void OS::loadPage(PCB * p)
         pp->limit = limit;
         p->limit = limit;
 
-        if(limit < 16)
-        {
-                for(limit; limit < 16; limit++);
-                        //vm.mem[16*empty_frame+limit] = 0;
-                        //vm.mem.push_back(-1);
-        }
-
         if(p->adPC)
                 p->pc = 16*empty_frame;// + p->displ;
 
@@ -323,9 +312,8 @@ void OS::nextJob(){
 }
 
 void OS::idle(){
-
-                for(idleCounter=0; waitQ.front() -> IO_clock >= vm.clock; vm.clock++, idleCounter++);
-        idleTime += idleCounter;
+	for(idleCounter=0; waitQ.front() -> IO_clock >= vm.clock; vm.clock++, idleCounter++);
+        	idleTime += idleCounter;
 
 }
 
@@ -370,9 +358,8 @@ void OS::printInfo(){
 	for(;itr != terminateJob.end(); itr++)
 	{
         	(*itr)->pcbOutFile << "\nCPU Time: " << (*itr)->CPU_time << endl;
-        	(*itr)->pcbOutFile << "Largest stack size: " << (*itr)->largestStackSize << endl;
-        	(*itr)->pcbOutFile << "I/O Time in waitQ: " << (*itr)->ioTime << endl;
-        	(*itr)->pcbOutFile << "Waiting Time in readyQ: " << (*itr)->waitTime << endl;
+        	(*itr)->pcbOutFile << "Time in waitQ: " << (*itr)->ioTime << endl;
+        	(*itr)->pcbOutFile << "Time in readyQ: " << (*itr)->waitTime << endl;
         	(*itr)->pcbOutFile << "Turn around time: " << (*itr)->tTime <<endl;
         	(*itr)->pcbOutFile << "Number of page fault: " << (*itr)->pf << endl;
         	(*itr)->pcbOutFile << "Hit ratio: " << (*itr)->HR << endl;
@@ -386,7 +373,7 @@ void OS::printInfo(){
         (*itr)->pcbOutFile << "\nSystem Information: " << endl;
         (*itr)->pcbOutFile  << "\tCPU Utilization: " << setprecision(4)
                  << static_cast<double>((vm.clock-idleTime))/static_cast<double>(vm.clock)*100 << "%"<<endl;
-        (*itr)->pcbOutFile  << "\tThroughput: " << (static_cast<double>(pcb.size())/(static_cast<double>(vm.clock)))*1000<< " seconds" << endl;
+        (*itr)->pcbOutFile  << "\tThroughput: " << (static_cast<double>(pcb.size())/(static_cast<double>(vm.clock)))*1000<< endl;
 	}
 }
 
