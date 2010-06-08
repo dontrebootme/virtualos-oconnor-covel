@@ -99,7 +99,7 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
 
                 pp->validBit = 1;
 
-                if(limit <      16)
+                if(limit < 16)
                         for(int i=limit; i < 16; counter++, i++)
                                 mem[counter] = -1;
 
@@ -217,6 +217,15 @@ void VirtualMachine::run(PCB * p)
 
                 sr = sr & 0x1F;//clearing vm_return status
 
+
+		if(pageFault){
+			cout << "Page Fault" << endl;
+			sr = sr | 0xE0;
+			pageFault = false;
+			saveState(p);
+			break;
+		}
+
                 if(sp < (counter + 6))//stack overflow
                 {
                         sr = sr | 0x60;//setting overflow flag
@@ -265,7 +274,7 @@ void VirtualMachine::run(PCB * p)
 
 		if(objCode.f1.OP == 22){
                 	//cout << "IO Operation, SR before: " << sr << endl;
-		        sr = sr | 0xF0;//io operation
+		        sr = sr | 0xD0;//io operation
 			//cout << "IO Operation: " << sr << endl;
 			checkRange(p);
                         saveState(p);
@@ -289,12 +298,6 @@ void VirtualMachine::run(PCB * p)
                         break;
                 }
 
-		if(pageFault){
-			sr = sr | 0xE0;
-			pageFault = false;
-			saveState(p);
-			break;
-		}
                 if(pc >= limit)
                 {
                         ++(p->pageCounter);
@@ -358,13 +361,23 @@ void VirtualMachine::checkRange(PCB* p)
 VirtualMachine::VirtualMachine()
 {
 	//initializing data types
-	counter=0;
-	timeSlice = 15;
 	funcMap.reserve(26);
 	mem.reserve(256);
+	TLB.reserve(16);
+	frameTimeStamps.reserve(16);
+
+	for(int i=0; i < 16; i++)
+	{
+		TLB[i] = new Page;
+		TLB[i]->validBit = 0;
+	}
+
 	r.reserve(4);
-	clock = sr = base = pc = limit = 0;
+	counter = clock = sr = base = pc = limit = 0;
 	sp = 256;
+	availFrames.reserve(16);
+	timeSlice = 15;
+	pageFault = false;
 
 	//building function map in a vector
 	funcMap[0] = &VirtualMachine::load; 		funcMap[1] = &VirtualMachine::store;

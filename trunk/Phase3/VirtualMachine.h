@@ -136,7 +136,7 @@ class VirtualMachine {
 		PCB * current;
 
                 bool pageFault;
-                vector<int> avail_frames;
+                vector<int> availFrames;
                 vector<Page *> TLB;
                 vector<int> frameTimeStamps;
 	};
