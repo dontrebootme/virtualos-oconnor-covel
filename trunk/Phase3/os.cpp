@@ -362,7 +362,7 @@ void OS::printInfo(){
         	(*itr)->pcbOutFile << "Time in readyQ: " << (*itr)->waitTime << endl;
         	(*itr)->pcbOutFile << "Turn around time: " << (*itr)->tTime <<endl;
         	(*itr)->pcbOutFile << "Number of page fault: " << (*itr)->pf << endl;
-        	
+        	(*itr)->pcbOutFile << "Hit Ratio: " << (static_cast<double>(32 - (*itr)->pf) / 32) << endl;	
 		//(*itr)->pcbOutFile << "Hit ratio: " << (((static_cast<double>(pcb.size()))-(static_cast<double>((*itr)->pf)))/(static_cast<double>(pcb.size()))) << endl;//(*itr)->HR << endl;
         	ioTime += (*itr)->ioTime;
 		cpuTime += (*itr)->CPU_time;
