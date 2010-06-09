@@ -1,0 +1,14 @@
+4
+
+CPU Time: 59
+Time in waitQ: 304
+Time in readyQ: 693
+Turn around time: 1056
+Number of page fault: 0
+Hit ratio: 0
+
+CPU idled for: 16 ticks.
+
+System Information: 
+	CPU Utilization: 98.62%
+	Throughput: 165.9

@@ -1,0 +1,14 @@
+An out-of-bound reference was made.
+
+CPU Time: 36
+Time in waitQ: 297
+Time in readyQ: 732
+Turn around time: 0
+Number of page fault: 1
+Hit ratio: 1
+
+CPU idled for: 16 ticks.
+
+System Information: 
+	CPU Utilization: 98.62%
+	Throughput: 165.9
