@@ -1,10 +1,10 @@
 /************************************************
- * os.cpp
+ * os.cpagePointer
  * Patrick O'Connor, Timothy Covel
  * Apr/21/2010
- * to compile: g++ -o os os.cpp Assembler.cpp VirtualMachine.cpp
+ * to compile: g++ -o os os.cpagePointer Assembler.cpagePointer VirtualMachine.cpagePointer
  * to run: ./os prog.s
- * Depends on Assembler.h Assembler.cpp VirtualMachine.h VirtualMachine.cpp
+ * Depends on Assembler.h Assembler.cpagePointer VirtualMachine.h VirtualMachine.cpagePointer
  *
  * Main program for running the assembler and virtual machine for
  * the virtual operating system project, Phase 1
@@ -24,8 +24,8 @@ OS::OS(){
 
         AssembleProgs();
 	idleTime = idleCounter = 0;
-	FIFO = false;
-	LRU = true;
+	FIFO = true;
+	LRU = false;
 	}
 
 void OS::AssembleProgs(){
@@ -247,10 +247,10 @@ void OS::loadPage(PCB * p)
 
         }
 
-        Page * pp = new Page;
+        Page * pagePointer = new Page;
 
-        pp->validBit = 1;
-        pp->frame = empty_frame;
+        pagePointer->validBit = 1;
+        pagePointer->frame = empty_frame;
         FIFORef.push(empty_frame);
 
         invertPageTable[empty_frame]->frameOwner = p->pName;
@@ -266,9 +266,8 @@ void OS::loadPage(PCB * p)
 
         for(limit=0; limit < 8  && p->pcbObjectFile >> temp; limit++)
                 vm.mem[8 * empty_frame + limit] = temp;
-                //vm.mem.push_back(temp);
 
-        pp->limit = limit;
+        pagePointer->limit = limit;
         p->limit = limit;
 
         if(p->adPC)
@@ -276,9 +275,9 @@ void OS::loadPage(PCB * p)
 
         p->adPC = false;
 
-        pp->base = 8*empty_frame;
+        pagePointer->base = 8*empty_frame;
         p->base = 8*empty_frame;
-        p->pageTable[p->pageRequest] = pp;
+        p->pageTable[p->pageRequest] = pagePointer;
 
         p->triger = false;
 
@@ -286,17 +285,14 @@ void OS::loadPage(PCB * p)
 }
 
 void OS::checkWaiting(){
+	while( !waitQ.empty() && waitQ.front() -> IO_clock < vm.clock){
+        	readyQ.push(waitQ.front());
+		if(waitQ.front()->triger)
+                	loadPage(waitQ.front());
 
-        //poping all ready items into readyQ
-   while( !waitQ.empty() && waitQ.front() -> IO_clock < vm.clock){
-         readyQ.push(waitQ.front());
-
-                 if(waitQ.front()->triger)
-                                loadPage(waitQ.front());
-
-                 waitQ.front() -> readyTimeStamp = vm.clock ;
-                 waitQ.front() -> ioTime += (vm.clock - (waitQ.front() -> waitTimeStamp));
-       waitQ.pop();
+                waitQ.front() -> readyTimeStamp = vm.clock ;
+                waitQ.front() -> ioTime += (vm.clock - (waitQ.front() -> waitTimeStamp));
+		waitQ.pop();
         }
 
 }
@@ -354,7 +350,7 @@ void OS::printInfo(){
 
 	list<PCB *>::iterator itr;
 	itr = terminateJob.begin();
-
+	
 	double ioTime=0;
 	for(;itr != terminateJob.end(); itr++)
 	{
@@ -363,10 +359,10 @@ void OS::printInfo(){
         	(*itr)->pcbOutFile << "Time in readyQ: " << (*itr)->waitTime << endl;
         	(*itr)->pcbOutFile << "Turn around time: " << (*itr)->tTime <<endl;
         	(*itr)->pcbOutFile << "Number of page fault: " << (*itr)->pf << endl;
-        	(*itr)->pcbOutFile << "Hit ratio: " << (*itr)->HR << endl;
+        	
+		//(*itr)->pcbOutFile << "Hit ratio: " << (((static_cast<double>(pcb.size()))-(static_cast<double>((*itr)->pf)))/(static_cast<double>(pcb.size()))) << endl;//(*itr)->HR << endl;
         	ioTime += (*itr)->ioTime;
 	}
-
 	itr = terminateJob.begin();
 	for(;itr != terminateJob.end(); itr++)
 	{
@@ -374,7 +370,7 @@ void OS::printInfo(){
         (*itr)->pcbOutFile << "\nSystem Information: " << endl;
         (*itr)->pcbOutFile  << "\tCPU Utilization: " << setprecision(4)
                  << static_cast<double>((vm.clock-idleTime))/static_cast<double>(vm.clock)*100 << "%"<<endl;
-        (*itr)->pcbOutFile  << "\tThroughput: " << (static_cast<double>(pcb.size())/(static_cast<double>(vm.clock)))*1000<< endl;
+        (*itr)->pcbOutFile  << "\tThroughput: " << (static_cast<double>(vm.clock)/(static_cast<double>(pcb.size()))) << endl;
 	}
 }
 

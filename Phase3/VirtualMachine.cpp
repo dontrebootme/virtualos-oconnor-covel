@@ -311,7 +311,7 @@ void VirtualMachine::run(PCB * p)
                                 TLB[(p->pageCounter)]->base = TLB[(p->pageCounter)]->frame * 8;
                                 base = TLB[(p->pageCounter)]->base;
 				limit = base + 8;
-                                ++(p->HR);
+                               	p->HR += 1;
                                 clock += 4;
                                 frameTimeStamps[pc/8] = clock;
                                 goto skip2;
@@ -343,7 +343,7 @@ void VirtualMachine::checkRange(PCB* p)
                         	TLB[(p->pageCounter)]->base = TLB[(p->pageCounter)]->frame * 8;
                         	base = TLB[(p->pageCounter)]->base;
                        		limit = base + 8;
-                                ++(p->HR);
+                                p->HR += 1;
                                 clock += 4;
                                 frameTimeStamps[pc/8] = clock;
                                 goto skip2;
@@ -438,7 +438,7 @@ void VirtualMachine::load()
 				r[objCode.f2.RD] = mem[(gf*8)+(objCode.f2.AC%8)];
 				if(objCode.f2.AC > limit)
 					{
-						++(current->HR);
+						current->HR += 1;
 					}
 			clock += 4;
 			}
@@ -473,7 +473,7 @@ void VirtualMachine::store()
 	{
 		if(objCode.f2.AC > limit)
 		{
-			++(current->HR);
+			current->HR += 1;
 		}	
 	mem[(gf*8)+objCode.f2.AC%8] = r[objCode.f2.RD];
 	}
