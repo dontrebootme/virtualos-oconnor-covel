@@ -29,7 +29,7 @@ struct Page{
 struct PCB{
         vector<int> r;
         int pc, sr, sp, base, limit, IO_clock;
-        int CPU_time, largestStackSize, tTime, ioTime, waitTime, pf, HR, waitTimeStamp, readyTimeStamp;
+        int CPU_time, userTime, largestStackSize, tTime, ioTime, waitTime, pf, HR, waitTimeStamp, readyTimeStamp;
         string pName;
 
         ifstream pcbInFile;

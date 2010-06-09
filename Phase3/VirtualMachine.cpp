@@ -217,9 +217,11 @@ void VirtualMachine::run(PCB * p)
 
                 sr = sr & 0x1F;//clearing vm_return status
 
+		//cout << "sr: " << sr << endl;
 
 		if(pageFault){
 			sr = sr | 0xE0;
+                        //cout << "Page Fault: " << sr << endl;
 			pageFault = false;
 			saveState(p);
 			break;
@@ -260,7 +262,7 @@ void VirtualMachine::run(PCB * p)
                         (objCode.f1.OP == 19) || //jumpg AC
                         (objCode.f1.OP == 20)) //call AC
                 {
-                        if(!((objCode.f2.AC+base < base + limit)
+                       if(!((objCode.f2.AC+base < base + limit)
                          && (objCode.f2.AC+base >= base) && !(objCode.f2.AC <= 0)))
                         {
                                 //sr = sr | 0x60; // out-bound was made 
@@ -269,7 +271,8 @@ void VirtualMachine::run(PCB * p)
 				//cout << "breaking 3" << endl;
                                 break;
                         }
-                }
+                
+		}
 
 		if(objCode.f1.OP == 22){
                 	//cout << "IO Operation, SR before: " << sr << endl;
