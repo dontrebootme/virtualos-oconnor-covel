@@ -13,7 +13,7 @@
 
 	                                        
 OS::OS(){
-	invertPageTable = vector<InvertedPage*>(16);
+	invertPageTable = vector<InvertedPage*>(32);
 	
 	for(int i = 0; i < invertPageTable.size(); i++)
 	{
@@ -46,9 +46,9 @@ void OS::AssembleProgs(){
 	vm.loadMemory(pcb);
 	for(int i = 0; i < pcb.size(); i++)
 	{
-        	invertPageTable[pcb.front()->pc/16]->frameOwner = pcb.front()->pName;
-        	invertPageTable[pcb.front()->pc/16]->page = 0;
-        	FIFORef.push(pcb.front()->pc/16);
+        	invertPageTable[pcb.front()->pc/8]->frameOwner = pcb.front()->pName;
+        	invertPageTable[pcb.front()->pc/8]->page = 0;
+        	FIFORef.push(pcb.front()->pc/8);
         	pcb.push_back(pcb.front());
         	pcb.pop_front();
 	}
@@ -182,7 +182,7 @@ bool OS::checkPage(int page, PCB *p)
 
         for(counter = 0;strea >> temp; counter++);
 
-        counter = ceil(static_cast<double>(counter)/16.0);
+        counter = ceil(static_cast<double>(counter)/8.0);
         if(counter >= page)
                 return true;
         else
@@ -214,7 +214,7 @@ void OS::loadPage(PCB * p)
 
                 if(LRU)
                 {
-                        for(int i = 0; i < 16; i++)
+                        for(int i = 0; i < 32; i++)
                         {
                                 if(vm.frameTimeStamps[i] < time)
                                 {
@@ -230,7 +230,7 @@ void OS::loadPage(PCB * p)
                 {
                         if(invertPageTable[empty_frame]->frameOwner == pcb.front()->pName)
                         {
-                                for(; j < 16; j++)
+                                for(; j < 32; j++)
                                 {
                                         if(pcb.front()->pageTable[j]->frame == empty_frame)
                                         {
@@ -260,23 +260,23 @@ void OS::loadPage(PCB * p)
 
         (p->pcbObjectFile).open(file.c_str(),ios::in);
 
-        for(int i = 0; i < p->pageRequest*16; i++)
+        for(int i = 0; i < p->pageRequest*8; i++)
                 p->pcbObjectFile >> temp;
 
-        for(limit=0; limit < 16 && p->pcbObjectFile >> temp; limit++)
-                vm.mem[16 * empty_frame + limit] = temp;
+        for(limit=0; limit < 8  && p->pcbObjectFile >> temp; limit++)
+                vm.mem[8 * empty_frame + limit] = temp;
                 //vm.mem.push_back(temp);
 
         pp->limit = limit;
         p->limit = limit;
 
         if(p->adPC)
-                p->pc = 16*empty_frame;// + p->displ;
+                p->pc = 8*empty_frame;// + p->displ;
 
         p->adPC = false;
 
-        pp->base = 16*empty_frame;
-        p->base = 16*empty_frame;
+        pp->base = 8*empty_frame;
+        p->base = 8*empty_frame;
         p->pageTable[p->pageRequest] = pp;
 
         p->triger = false;
