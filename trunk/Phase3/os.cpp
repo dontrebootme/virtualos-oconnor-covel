@@ -325,11 +325,13 @@ void OS::run(){
                 	temp = vm.clock-5;
                 	vm.run(running);
                 	running->CPU_time += (vm.clock-temp-5);
+			running->userTime = ((running->CPU_time) / vm.clock);
         	}
 		else{
                 	temp = vm.clock;
                 	vm.run(running);
                 	running->CPU_time += (vm.clock-temp);
+			running->userTime = ((running->CPU_time) / vm.clock);
         	}
 		if(contextSwitch() == -1)
 			goto exit;
@@ -352,6 +354,7 @@ void OS::printInfo(){
 	itr = terminateJob.begin();
 	
 	double ioTime=0;
+	double cpuTime=0;
 	for(;itr != terminateJob.end(); itr++)
 	{
         	(*itr)->pcbOutFile << "\nCPU Time: " << (*itr)->CPU_time << endl;
@@ -362,16 +365,21 @@ void OS::printInfo(){
         	
 		//(*itr)->pcbOutFile << "Hit ratio: " << (((static_cast<double>(pcb.size()))-(static_cast<double>((*itr)->pf)))/(static_cast<double>(pcb.size()))) << endl;//(*itr)->HR << endl;
         	ioTime += (*itr)->ioTime;
+		cpuTime += (*itr)->CPU_time;
 	}
 	itr = terminateJob.begin();
-	for(;itr != terminateJob.end(); itr++)
-	{
-        (*itr)->pcbOutFile << "\nCPU idled for: " << idleTime << " ticks." << endl;
-        (*itr)->pcbOutFile << "\nSystem Information: " << endl;
-        (*itr)->pcbOutFile  << "\tCPU Utilization: " << setprecision(4)
+	//for(;itr != terminateJob.end(); itr++)
+	//{
+        cout << "\nCPU idled for: " << idleTime << " ticks." << endl;
+        cout << "\nSystem Information: " << endl;
+        cout  << "\tCPU System Utilization: " << setprecision(4)
                  << static_cast<double>((vm.clock-idleTime))/static_cast<double>(vm.clock)*100 << "%"<<endl;
-        (*itr)->pcbOutFile  << "\tThroughput: " << (static_cast<double>(vm.clock)/(static_cast<double>(pcb.size()))) << endl;
-	}
+        
+        cout  << "\tCPU User Utilization: " << setprecision(4)
+                 << static_cast<double>((cpuTime))/static_cast<double>(vm.clock)*100 << "%"<<endl;
+	//cout << "\tThroughput: " << (static_cast<double>(pcb.size()) / 1000) << endl;
+	cout  << "\tThroughput: " << (1000/(static_cast<double>(pcb.size()))) << endl;
+	//}
 }
 
 
