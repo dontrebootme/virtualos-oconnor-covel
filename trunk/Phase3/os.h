@@ -13,7 +13,7 @@
 class OS{
 
 public:
-        OS();
+        OS(string choice);
         void run();
 
 private:
