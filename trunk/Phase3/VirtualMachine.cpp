@@ -113,6 +113,7 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
                 file = file.substr(0,file.length()-3) + ".out";
                 ((*PCBit) -> pcbOutFile).open(file.c_str(),ios::out);
 
+		(*PCBit) -> pcbOutFile << endl << "--------- " << file << " --------" << endl;
                 (*PCBit)->pageTable[0] = pp;
 
         }
