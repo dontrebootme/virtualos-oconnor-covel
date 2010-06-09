@@ -219,7 +219,6 @@ void VirtualMachine::run(PCB * p)
 
 
 		if(pageFault){
-			cout << "Page Fault" << endl;
 			sr = sr | 0xE0;
 			pageFault = false;
 			saveState(p);
