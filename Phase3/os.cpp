@@ -11,8 +11,9 @@
 *************************************************/
 #include "os.h"
 
+
 	                                        
-OS::OS(){
+OS::OS(string choice){
 	invertPageTable = vector<InvertedPage*>(32);
 	
 	for(int i = 0; i < invertPageTable.size(); i++)
@@ -21,11 +22,20 @@ OS::OS(){
 		invertPageTable[i]->frameOwner = "";
 		invertPageTable[i]->page = 0;
 	}
-
+	if (choice == "LRU" || choice == "lru")
+	{
+		LRU=true;
+		FIFO=false;
+	}
+	else if (choice == "FIFO" || choice == "fifo")
+        {        
+		FIFO=true;
+		LRU=false;
+	}
         AssembleProgs();
 	idleTime = idleCounter = 0;
-	FIFO = true;
-	LRU = false;
+//	FIFO = true;
+//	LRU = false;
 	}
 
 void OS::AssembleProgs(){
@@ -383,8 +393,9 @@ void OS::printInfo(){
 }
 
 
-int main(){
-	OS os;
+int main(int argc, char* argv[]){
+	
+	OS os(argv[1]);
 	os.run();
 	return 0;
 }
