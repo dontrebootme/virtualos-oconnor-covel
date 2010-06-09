@@ -34,9 +34,9 @@ void VirtualMachine::init(PCB *p)
                 for(int i = 0; i < 4; i++)
                         p->r[i] = 0;
 
-                p->pageTable.reserve(16);
+                p->pageTable.reserve(32);
 
-                for(int i=0; i < 16; i++)
+                for(int i=0; i < 32; i++)
                 {
                         p->pageTable[i] = new Page;
                         p->pageTable[i]->validBit = 0;
@@ -92,15 +92,15 @@ void VirtualMachine::loadMemory(list<PCB *> &pcb)
                         (*PCBit) -> base = counter;
                 }
 
-                pp->frame = counter/16;
+                pp->frame = counter/8;
 
-                for(limit=0; limit < 16 && (*PCBit)->pcbObjectFile >> temp; counter++, limit++)
+                for(limit=0; limit < 8 && (*PCBit)->pcbObjectFile >> temp; counter++, limit++)
                         mem[counter] = temp; 
 
                 pp->validBit = 1;
 
-                if(limit < 16)
-                        for(int i=limit; i < 16; counter++, i++)
+                if(limit < 8)
+                        for(int i=limit; i < 8; counter++, i++)
                                 mem[counter] = -1;
 
                 (*PCBit) -> limit = limit;
@@ -150,7 +150,7 @@ void VirtualMachine::loadState(PCB * p)
 {
         int temp;
 
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < 32; i++)
 		TLB[i] = p->pageTable[i];
 
         for(int i = 0; i < 4; i++)
@@ -161,7 +161,7 @@ void VirtualMachine::loadState(PCB * p)
         sp = p->sp;
         pc = p->pc;
         base = pc;
-        limit = pc + 16;
+        limit = pc + 8;
 
         string file = (p->pName);
         file = file.substr(0,(file.length()-2));
@@ -175,24 +175,24 @@ void VirtualMachine::loadState(PCB * p)
                         mem[i] = temp;
         }
         (p->pcbStateFile).close();
-	frameTimeStamps[pc/16] = clock;
+	frameTimeStamps[pc/8] = clock;
 }
 
 void VirtualMachine::CheckAddr(int addr)
 {
-        if(TLB[addr/16]->validBit == 1)
+        if(TLB[addr/8]->validBit == 1)
         {
-                pc = ((TLB[addr/16]->frame)*16) + (addr % 16);
+                pc = ((TLB[addr/8]->frame)*8) + (addr % 8);
 
-                TLB[addr/16]->base = TLB[addr/16]->frame*16;
+                TLB[addr/8]->base = TLB[addr/8]->frame*8;
 
-                base = TLB[addr/16]->base;
-                limit = base + 16;
+                base = TLB[addr/8]->base;
+                limit = base + 8;
         }
         else
         {
                 current->adPC = false;
-                current->pageRequest = addr/16;
+                current->pageRequest = addr/8;
                 pageFault = true;
                 pc--;
         }
@@ -307,12 +307,14 @@ void VirtualMachine::run(PCB * p)
 
                         if(TLB[p->pageCounter]->validBit == 1)
                         {
-                                pc = (TLB[(p->pageCounter)]->frame * 16) + pc % 16;
-                                base = pc/16;
-                                limit = base + 16;
+                                pc = (TLB[(p->pageCounter)]->frame * 8) + pc % 8;
+                                //base = pc/8;
+                                TLB[(p->pageCounter)]->base = TLB[(p->pageCounter)]->frame * 8;
+                                base = TLB[(p->pageCounter)]->base;
+				limit = base + 8;
                                 ++(p->HR);
                                 clock += 4;
-                                frameTimeStamps[pc/16] = clock;
+                                frameTimeStamps[pc/8] = clock;
                                 goto skip2;
                         }
                         skip1:;
@@ -338,16 +340,17 @@ void VirtualMachine::checkRange(PCB* p)
 
                         if(TLB[p->pageCounter]->validBit == 1)
                         {
-                                pc = (TLB[(p->pageCounter)]->frame * 16) + pc % 16;
-                                base = pc/16;
-                                limit = base + 16;
+				pc = (TLB[(p->pageCounter)]->frame * 8) + pc % 8;
+                        	TLB[(p->pageCounter)]->base = TLB[(p->pageCounter)]->frame * 8;
+                        	base = TLB[(p->pageCounter)]->base;
+                       		limit = base + 8;
                                 ++(p->HR);
                                 clock += 4;
-                                frameTimeStamps[pc/16] = clock;
+                                frameTimeStamps[pc/8] = clock;
                                 goto skip2;
                         }
-
-                        skip1:;
+                        
+			skip1:;
                         sr = sr | 0xE0;
                         saveState(p);
                         p->pageRequest = p->pageCounter;
@@ -363,10 +366,10 @@ VirtualMachine::VirtualMachine()
 	//initializing data types
 	funcMap.reserve(26);
 	mem.reserve(256);
-	TLB.reserve(16);
-	frameTimeStamps.reserve(16);
+	TLB.reserve(32);
+	frameTimeStamps.reserve(32);
 
-	for(int i=0; i < 16; i++)
+	for(int i=0; i < 32; i++)
 	{
 		TLB[i] = new Page;
 		TLB[i]->validBit = 0;
@@ -375,7 +378,7 @@ VirtualMachine::VirtualMachine()
 	r.reserve(4);
 	counter = clock = sr = base = pc = limit = 0;
 	sp = 256;
-	availFrames.reserve(16);
+	availFrames.reserve(32);
 	timeSlice = 15;
 	pageFault = false;
 
@@ -406,9 +409,9 @@ int VirtualMachine::getFrame(int page)
 
 int VirtualMachine::getCurrentPage()
 {
-        int currentFrame = (pc)/16;
+        int currentFrame = (pc)/8;
 
-        for(int i = 0; i < 16; i++)
+        for(int i = 0; i < 32; i++)
         {
                 if(TLB[i]->frame == currentFrame)
                         return i;
@@ -422,18 +425,18 @@ void VirtualMachine::load()
 {
 	if ( objCode.f1.I == 0 ) 
 		{
-			int gf = getFrame(objCode.f2.AC/16);
+			int gf = getFrame(objCode.f2.AC/8);
 
 			if( gf == -1)
 			{
-				current -> pageRequest = objCode.f2.AC/16;
+				current -> pageRequest = objCode.f2.AC/8;
 				current -> adPC = false;
 				pageFault = true;
 				pc --;
 			}
 			else
 			{
-				r[objCode.f2.RD] = mem[(gf*16)+(objCode.f2.AC%16)];
+				r[objCode.f2.RD] = mem[(gf*8)+(objCode.f2.AC%8)];
 				if(objCode.f2.AC > limit)
 					{
 						++(current->HR);
@@ -458,12 +461,12 @@ void VirtualMachine::load()
 void VirtualMachine::store() 
 {
 	clock += 4;
-	int gf = getFrame(objCode.f2.AC/16);
+	int gf = getFrame(objCode.f2.AC/8);
 
 	if (gf == -1)
 	{
 		current->adPC = false;
-		current->pageRequest = objCode.f2.AC/16;
+		current->pageRequest = objCode.f2.AC/8;
 		pageFault = true;
 		pc --;
 	}
@@ -473,7 +476,7 @@ void VirtualMachine::store()
 		{
 			++(current->HR);
 		}	
-	mem[(gf*16)+objCode.f2.AC%16] = r[objCode.f2.RD];
+	mem[(gf*8)+objCode.f2.AC%8] = r[objCode.f2.RD];
 	}
 }
 		
@@ -814,18 +817,18 @@ void VirtualMachine::jumpg()
 void VirtualMachine::call()
 {
 	clock += 4;
-	current->killFrames.push(sp/16);
+	current->killFrames.push(sp/8);
 
-	if(TLB[objCode.f2.AC/16]->validBit == 0)
+	if(TLB[objCode.f2.AC/8]->validBit == 0)
 	{
-		current->pageRequest = objCode.f2.AC/16;
+		current->pageRequest = objCode.f2.AC/8;
 		current->adPC = false;
 		pc--;
 		pageFault = true;
 		return;
 	}
 	mem[--sp] = getCurrentPage();
-	mem[--sp] = pc%16;//pushing pc
+	mem[--sp] = pc%8;//pushing pc
  	
 	for (int i = 0; i < 4; i++)//pushing r[0]~r[3]
 		mem[--sp] = r[i];
@@ -858,7 +861,7 @@ void VirtualMachine::myReturn()
 		r[i] = mem[sp++];
 	
 	i = mem[sp++];
-	i += (getFrame(mem[sp++]) * 16);
+	i += (getFrame(mem[sp++]) * 8);
 	
 	pc = i;
 }   
