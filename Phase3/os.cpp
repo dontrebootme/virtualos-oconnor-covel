@@ -395,6 +395,10 @@ void OS::printInfo(){
 
 int main(int argc, char* argv[]){
 	
+	if (argc == 1){
+		cout << "Usage: " << argv[0] << " LRU or FIFO" << endl;
+		return 1;
+	}
 	OS os(argv[1]);
 	os.run();
 	return 0;
