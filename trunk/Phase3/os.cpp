@@ -129,6 +129,7 @@ int OS::contextSwitch()
                 running -> waitTimeStamp = vm.clock;
                 running->triger = true;
                 ++(running->pf);
+		cout << "##	Page Fault	##" << endl;
                 break;
       	done:
                 printInfo();
